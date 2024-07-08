@@ -84,4 +84,16 @@ class Player
 
         return $this;
     }
+
+    public function getIsCoach(): ?bool
+    {
+        return $this->isCoach;
+    }
+
+    public function setIsCoach(bool $isCoach): static
+    {
+        $this->isCoach = $isCoach;
+
+        return $this;
+    }
 }
