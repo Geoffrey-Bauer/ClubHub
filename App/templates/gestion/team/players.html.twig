@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Effectif de l'équipe {{ team.name }}{% endblock %}
+
+{% block body %}
+    <h1>Effectif de l'équipe {{ team.name }}</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Poste</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in players %}
+                <tr>
+                    <td>{{ player.lastname }}</td>
+                    <td>{{ player.firstname }}</td>
+                    <td>{{ player.position }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucun joueur dans cette équipe</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('team_edit', {'id': team.id}) }}" class="btn btn-primary">Modifier l'équipe</a>
+    <a href="{{ path('team_list') }}" class="btn btn-secondary">Retour à la liste des équipes</a>
+{% endblock %}

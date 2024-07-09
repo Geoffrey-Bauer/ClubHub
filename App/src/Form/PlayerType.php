@@ -3,29 +3,28 @@
 namespace App\Form;
 
 use App\Entity\Player;
+use App\Entity\Team;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 
 class PlayerType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('lastname')
             ->add('firstname')
             ->add('position')
-            ->add('equipe')
-            ->add('isCoach')
-            // Ajoutez d'autres champs ici...
-        ;
+            ->add('team', EntityType::class, [
+                'class' => Team::class,
+                'choice_label' => 'name',
+            ])
+            ->add('isCoach');
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Player::class,

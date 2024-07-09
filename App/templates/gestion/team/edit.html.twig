@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Éditer une équipe{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
+        <h1 class="text-4xl font-bold mb-4">Éditer une équipe</h1>
+
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">Joueurs de l'équipe</h2>
+
+            <table class="table-auto w-full">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Nom</th>
+                        <th class="px-4 py-2">Prénom</th>
+                        <th class="px-4 py-2">Position</th>
+                        <th class="px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in team.players %}
+                        <tr>
+                            <td class="border px-4 py-2">{{ player.lastname }}</td>
+                            <td class="border px-4 py-2">{{ player.firstname }}</td>
+                            <td class="border px-4 py-2">{{ player.position }}</td>
+                            <td class="border px-4 py-2">
+                                <a href="{{ path('player_remove', {'id': player.id}) }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce joueur de l\'équipe ?');">Supprimer</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="border px-4 py-2">Aucun joueur dans cette équipe</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <button type="submit" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded mt-4">Enregistrer</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
