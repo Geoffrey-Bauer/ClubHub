@@ -1,0 +1,65 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Gestion Club de Football{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        <header class="mb-8 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-blue-600">Gestion Club de Football</h1>
+
+            {% if app.user %}
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Menu
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                        <div class="py-1">
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gestion des effectifs</a>
+                            {% endif %}
+                            {% if is_granted('ROLE_COACH') %}
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gestion des plannings</a>
+                            {% endif %}
+                            {% if not is_granted('ROLE_ADMIN') and not is_granted('ROLE_COACH') %}
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gestion du compte</a>
+                            {% endif %}
+                            <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Déconnexion</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div>
+                    <a href="{{ path('app_login') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2">Connexion</a>
+                    <a href="{{ path('app_register') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Inscription</a>
+                </div>
+            {% endif %}
+        </header>
+
+        <nav class="mb-8">
+            <ul class="flex space-x-4">
+                <li><a href="#" class="text-blue-500 hover:text-blue-700">Accueil</a></li>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <li><a href="#" class="text-blue-500 hover:text-blue-700">Administration</a></li>
+                    <li><a href="#" class="text-blue-500 hover:text-blue-700">Finances</a></li>
+                {% endif %}
+                {% if is_granted('ROLE_COACH') or is_granted('ROLE_ADMIN') %}
+                    <li><a href="#" class="text-blue-500 hover:text-blue-700">Équipes</a></li>
+                    <li><a href="#" class="text-blue-500 hover:text-blue-700">Entraînements</a></li>
+                {% endif %}
+                <li><a href="#" class="text-blue-500 hover:text-blue-700">Calendrier</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            {# Le reste du contenu reste inchangé #}
+            {# ... #}
+        </main>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+{% endblock %}
