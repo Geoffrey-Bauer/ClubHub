@@ -18,36 +18,11 @@ class PlayerType extends AbstractType
         $builder
             ->add('lastname')
             ->add('firstname')
-            ->add('position', TextType::class, [
-                'required' => false, // Rendre le champ facultatif
-            ])
+            ->add('position')
             ->add('equipe')
-            ->add('isCoach', CheckboxType::class, [
-                'label' => 'Est coach ?',
-                'required' => false,
-            ])
+            ->add('isCoach')
             // Ajoutez d'autres champs ici...
         ;
-
-        // Ajouter un événement pour modifier dynamiquement le champ 'position'
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            $player = $event->getData();
-            $form = $event->getForm();
-
-            if ($player && $player->getIsCoach()) {
-                // Si 'isCoach' est vrai, définissez automatiquement la valeur de 'position'
-                $form->add('position', TextType::class, [
-                    'required' => false,
-                    'disabled' => true, // Désactiver le champ pour éviter toute modification manuelle
-                    'data' => 'Entraîneur', // Valeur par défaut
-                ]);
-            } else {
-                // Sinon, ajoutez normalement le champ 'position' avec la logique initiale
-                $form->add('position', TextType::class, [
-                    'required' => false,
-                ]);
-            }
-        });
     }
 
     public function configureOptions(OptionsResolver $resolver)

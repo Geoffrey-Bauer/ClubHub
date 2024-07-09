@@ -1,34 +1,41 @@
-{# templates/gestion/player/list.html.twig #}
 {% extends 'base.html.twig' %}
+
+{% block title %}Liste des joueurs{% endblock %}
 
 {% block body %}
     <h1>Liste des joueurs</h1>
-    {% if players is empty %}
-        <p>Aucun joueur trouvé.</p>
-    {% else %}
-        <table>
-            <thead>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Position</th>
+                <th>Équipe</th>
+                <th>Coach</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in players %}
                 <tr>
-                    <th>ID</th>
-                    <th>Nom</th>
-                    <th>Prénom</th>
-                    <th>Position</th>
-                    <th>Équipe</th>
-                    <th>Coach</th>
+                    <td>{{ player.lastname }}</td>
+                    <td>{{ player.firstname }}</td>
+                    <td>{{ player.position }}</td>
+                    <td>{{ player.equipe }}</td>
+                    <td>{{ player.isCoach ? 'Oui' : 'Non' }}</td>
+                    <td>
+                        <a href="{{ path('player_edit', {'id': player.id}) }}" class="btn btn-modify">Modifier</a>
+                        <a href="{{ path('player_delete', {'id': player.id}) }}" class="btn btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce joueur ?');">Supprimer</a>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for player in players %}
-                    <tr>
-                        <td>{{ player.id }}</td>
-                        <td>{{ player.lastname }}</td>
-                        <td>{{ player.firstname }}</td>
-                        <td>{{ player.position }}</td>
-                        <td>{{ player.equipe }}</td>
-                        <td>{{ player.isCoach ? 'Oui' : 'Non' }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

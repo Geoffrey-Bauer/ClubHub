@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le joueur{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="checkbox"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #008CBA;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Modifier le joueur</h1>
+
+        {{ form_start(form) }}
+            {{ form_row(form.lastname, {'label': 'Nom'}) }}
+            {{ form_row(form.firstname, {'label': 'Prénom'}) }}
+            {{ form_row(form.position, {'label': 'Position'}) }}
+            {{ form_row(form.equipe, {'label': 'Équipe'}) }}
+            {{ form_row(form.isCoach, {'label': 'Est coach ?'}) }}
+
+            <button type="submit">Enregistrer les modifications</button>
+        {{ form_end(form) }}
+
+        <a href="{{ path('player_list') }}" class="back-link">Retour à la liste des joueurs</a>
+    </div>
+{% endblock %}
