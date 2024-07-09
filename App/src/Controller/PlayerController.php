@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Team;
 use App\Entity\Player;
 use App\Form\PlayerType;
 use App\Repository\PlayerRepository;
@@ -23,6 +24,8 @@ class PlayerController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $team = $em->getRepository(Team::class)->find($form->get('team')->getData());
+            $player->setTeam($team);
             $em->persist($player);
             $em->flush();
 
@@ -72,6 +75,18 @@ class PlayerController extends AbstractController
         $this->addFlash('success', 'Le joueur a été supprimé avec succès.');
 
         return $this->redirectToRoute('player_list');
+    }
+
+    #[Route('/player/{id}/remove', name: 'player_remove')]
+    public function removeFromTeam(Player $player, EntityManagerInterface $em): RedirectResponse
+    {
+        $team = $player->getTeam();
+        $team->removePlayer($player);
+        $em->flush();
+
+        $this->addFlash('success', 'Le joueur a été supprimé de l\'équipe avec succès.');
+
+        return $this->redirectToRoute('team_edit', ['id' => $team->getId()]);
     }
 
     // Ajoutez d'autres actions si nécessaire...

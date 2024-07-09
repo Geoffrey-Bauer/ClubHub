@@ -11,14 +11,13 @@
         </div>
     {% endfor %}
 
-    <table>
+    <table class="table">
         <thead>
             <tr>
                 <th>Nom</th>
                 <th>Prénom</th>
                 <th>Position</th>
                 <th>Équipe</th>
-                <th>Coach</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -28,14 +27,19 @@
                     <td>{{ player.lastname }}</td>
                     <td>{{ player.firstname }}</td>
                     <td>{{ player.position }}</td>
-                    <td>{{ player.equipe }}</td>
-                    <td>{{ player.isCoach ? 'Oui' : 'Non' }}</td>
+                    <td>{{ player.team ? player.team.name : 'Aucune équipe' }}</td>
                     <td>
-                        <a href="{{ path('player_edit', {'id': player.id}) }}" class="btn btn-modify">Modifier</a>
-                        <a href="{{ path('player_delete', {'id': player.id}) }}" class="btn btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce joueur ?');">Supprimer</a>
+                        <a href="{{ path('player_edit', {'id': player.id}) }}" class="btn btn-primary">Modifier</a>
+                        <a href="{{ path('player_delete', {'id': player.id}) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce joueur ?');">Supprimer</a>
                     </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun joueur trouvé</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <a href="{{ path('player_new') }}" class="btn btn-success">Ajouter un nouveau joueur</a>
 {% endblock %}

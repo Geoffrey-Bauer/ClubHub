@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Team;
+use App\Entity\Player;
 use App\Form\TeamType;
+use App\Form\PlayerType;
 use App\Repository\TeamRepository;
+use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,7 +37,9 @@ class TeamController extends AbstractController
         ]);
     }
 
-    #[Route('/team/list', name: 'team_list')]
+
+    #[Route('/team/list/', name: 'team_list')]
+
     public function list(TeamRepository $teamRepository): Response
     {
         // Récupérer toutes les équipes de la base de données
@@ -45,6 +50,7 @@ class TeamController extends AbstractController
             'teams' => $teams,
         ]);
     }
+
 
     #[Route('/team/edit/{id}', name: 'team_edit')]
     public function edit(Request $request, Team $team, EntityManagerInterface $em): Response
@@ -63,6 +69,7 @@ class TeamController extends AbstractController
         ]);
     }
 
+
     #[Route('/team/delete/{id}', name: 'team_delete')]
     public function delete(Team $team, EntityManagerInterface $em): RedirectResponse
     {
@@ -74,5 +81,15 @@ class TeamController extends AbstractController
         return $this->redirectToRoute('team_list');
     }
 
+    #[Route('/team/{id}/players', name: 'team_players')]
+    public function teamPlayers(Team $team): Response
+    {
+        $players = $team->getPlayers();
+
+        return $this->render('gestion/team/players.html.twig', [
+            'team' => $team,
+            'players' => $players,
+        ]);
+    }
     // Ajoutez d'autres actions si nécessaire...
 }

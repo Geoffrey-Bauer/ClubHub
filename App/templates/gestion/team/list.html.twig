@@ -3,39 +3,50 @@
 {% block title %}Liste des équipes{% endblock %}
 
 {% block body %}
-    <h1>Liste des équipes</h1>
+    <div class="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
+        <h1 class="text-4xl font-bold mb-4">Liste des équipes</h1>
 
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success">
-            {{ message }}
-        </div>
-    {% endfor %}
+        {% for message in app.flashes('success') %}
+            <div class="bg-green-500 text-white font-bold p-4 rounded mb-4">
+                {{ message }}
+            </div>
+        {% endfor %}
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Ville</th>
-                <th>Pays</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for team in teams %}
+        <table class="table-fixed w-full">
+            <thead>
                 <tr>
-                    <td>{{ team.name }}</td>
-                    <td>
-                        <a href="{{ path('team_edit', {'id': team.id}) }}" class="btn btn-primary">Modifier</a>
-                        <a href="{{ path('team_delete', {'id': team.id}) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette équipe ?');">Supprimer</a>
-                    </td>
+                    <th class="w-1/2 px-4 py-2">Nom</th>
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_COACH') %}
+                        <th class="w-1/2 px-4 py-2">Actions</th>
+                    {% endif %}
                 </tr>
-            {% else %}
-                <tr>
-                    <td colspan="4">Aucune équipe trouvée</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for team in teams %}
+                    <tr>
+                        <td class="px-4 py-2">{{ team.name }}</td>
+                        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_COACH') %}
+                            <td class="px-4 py-2">
+                                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_COACH') %}
+                                    <a href="{{ path('team_edit', {'id': team.id}) }}" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">Modifier</a>
+                                {% endif %}
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('team_delete', {'id': team.id}) }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette équipe ?');">Supprimer</a>
+                                {% endif %}
+                                <a href="{{ path('team_players', {'id': team.id}) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Voir les joueurs</a>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_COACH') %}4{% else %}3{% endif %}" class="px-4 py-2">Aucune équipe trouvée</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-    <a href="{{ path('team_new') }}" class="btn btn-success">Ajouter une nouvelle équipe</a>
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('team_new') }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 inline-block">Ajouter une nouvelle équipe</a>
+        {% endif %}
+    </div>
 {% endblock %}
