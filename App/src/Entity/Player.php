@@ -54,9 +54,9 @@ class Player
         return $this->firstname;
     }
 
-    public function setFirstname(string $fistname): static
+    public function setFirstname(string $firstname): static
     {
-        $this->firstname = $fistname;
+        $this->firstname = $firstname;
 
         return $this;
     }

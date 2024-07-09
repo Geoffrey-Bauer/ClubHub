@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Player;
 use App\Form\PlayerType;
+use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 
 class PlayerController extends AbstractController
 {
@@ -33,16 +35,43 @@ class PlayerController extends AbstractController
     }
 
     #[Route('/player/list', name: 'player_list')]
-    public function list(EntityManagerInterface $em): Response
+    public function list(PlayerRepository $playerRepository): Response
     {
-        $players = $em->getRepository(Player::class)->findAll();
+        // Récupérer tous les joueurs de la base de données
+        $players = $playerRepository->findAllPlayers();
 
-        // Utilisation de dump() pour vérifier le contenu de $players
-        dump($players); // Vérifiez la sortie de cette instruction dans votre console
-
+        // Rendre la vue avec les joueurs
         return $this->render('gestion/player/list.html.twig', [
             'players' => $players,
         ]);
+    }
+
+    #[Route('/player/edit/{id}', name: 'player_edit')]
+    public function edit(Request $request, Player $player, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(PlayerType::class, $player);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            return $this->redirectToRoute('player_list');
+        }
+
+        return $this->render('gestion/player/edit.html.twig', [
+            'form' => $form->createView(),
+            'player' => $player,
+        ]);
+    }
+
+    #[Route('/player/delete/{id}', name: 'player_delete')]
+    public function delete(Player $player, EntityManagerInterface $em): RedirectResponse
+    {
+        $em->remove($player);
+        $em->flush();
+
+        $this->addFlash('success', 'Le joueur a été supprimé avec succès.');
+
+        return $this->redirectToRoute('player_list');
     }
 
     // Ajoutez d'autres actions si nécessaire...
