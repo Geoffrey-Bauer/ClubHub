@@ -1,33 +1,63 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Effectif de l'équipe {{ team.name }}{% endblock %}
+{% block title %}Effectif de l'équipe {{ team.name }} - ClubHub{% endblock %}
 
 {% block body %}
-    <h1>Effectif de l'équipe {{ team.name }}</h1>
+    <div class="min-h-screen bg-gray-100">
+        {% include '_templates/_nav.html.twig' %}
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Poste</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for player in players %}
-                <tr>
-                    <td>{{ player.lastname }}</td>
-                    <td>{{ player.firstname }}</td>
-                    <td>{{ player.position }}</td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="3">Aucun joueur dans cette équipe</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('team_edit', {'id': team.id}) }}" class="btn btn-primary">Modifier l'équipe</a>
-    <a href="{{ path('team_list') }}" class="btn btn-secondary">Retour à la liste des équipes</a>
+        <div class="py-10">
+            <header>
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h1 class="text-3xl font-bold leading-tight text-gray-900">Effectif de l'équipe {{ team.name }}</h1>
+                </div>
+            </header>
+            <main>
+                <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
+                        <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">Liste des joueurs</h3>
+                            <p class="mt-1 max-w-2xl text-sm text-gray-500">{{ players|length }} joueur(s)</p>
+                        </div>
+                        <div class="border-t border-gray-200">
+                            <ul class="divide-y divide-gray-200">
+                                {% for player in players %}
+                                    <li class="px-4 py-4 sm:px-6 hover:bg-gray-50 transition duration-150 ease-in-out">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                                    <span class="text-indigo-700 font-medium text-sm">{{ player.firstname|first }}{{ player.lastname|first }}</span>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">{{ player.firstname }} {{ player.lastname }}</div>
+                                                    <div class="text-sm text-gray-500">{{ player.position }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="ml-2 flex-shrink-0">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Actif
+                                            </span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                {% else %}
+                                    <li class="px-4 py-5 sm:px-6 text-center text-gray-500">
+                                        Aucun joueur dans cette équipe
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex space-x-3">
+                        <a href="{{ path('team_edit', {'id': team.id}) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Modifier l'équipe
+                        </a>
+                        <a href="{{ path('team_list') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Retour à la liste des équipes
+                        </a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
 {% endblock %}
