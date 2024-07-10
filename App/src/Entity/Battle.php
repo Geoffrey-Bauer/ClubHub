@@ -20,10 +20,10 @@ class Battle
   #[ORM\Column(length: 255)]
   private ?string $lieu = null;
 
-  #[ORM\Column]
+  #[ORM\Column(nullable: true)]
   private ?int $scoreDomicile = null;
 
-  #[ORM\Column]
+  #[ORM\Column(nullable: true)]
   private ?int $scoreExterieur = null;
 
   #[ORM\ManyToOne(targetEntity: Team::class, inversedBy: 'homeBattles')]
@@ -68,7 +68,7 @@ class Battle
     return $this->scoreDomicile;
   }
 
-  public function setScoreDomicile(int $scoreDomicile): static
+  public function setScoreDomicile(?int $scoreDomicile): static
   {
     $this->scoreDomicile = $scoreDomicile;
 
@@ -80,7 +80,7 @@ class Battle
     return $this->scoreExterieur;
   }
 
-  public function setScoreExterieur(int $scoreExterieur): static
+  public function setScoreExterieur(?int $scoreExterieur): static
   {
     $this->scoreExterieur = $scoreExterieur;
 
@@ -109,5 +109,10 @@ class Battle
     $this->teamExterieur = $teamExterieur;
 
     return $this;
+  }
+
+  public function __toString()
+  {
+    return (string) $this->id;
   }
 }
