@@ -24,19 +24,43 @@ class PlayerController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $team = $em->getRepository(Team::class)->find($form->get('team')->getData());
-            $player->setTeam($team);
+            $teamData = $form->get('team')->getData();
+            if ($teamData instanceof Team) {
+                $player->setTeam($teamData);
+            } else {
+                // Si aucune équipe n'est sélectionnée, on laisse la team à null
+                $player->setTeam(null);
+            }
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $player = $form->getData();
+                if ($player->getPosition() === null) {
+                    $player->setPosition('Aucun Poste'); // Définissez une valeur par défaut si nécessaire
+                }
+                $em->persist($player);
+                $em->flush();
+                $this->addFlash('success', 'Le joueur a été créé avec succès.');
+                return $this->redirectToRoute('player_list');
+            }
+
+
             $em->persist($player);
             $em->flush();
 
+            $this->addFlash('success', 'Le joueur a été créé avec succès.');
             return $this->redirectToRoute('player_list');
+        }
+
+        // Vérifier s'il existe des équipes
+        $teams = $em->getRepository(Team::class)->findAll();
+        if (empty($teams)) {
+            $this->addFlash('warning', 'Aucune équipe n\'existe. Le joueur sera créé sans équipe.');
         }
 
         return $this->render('gestion/player/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
-
     #[Route('/player/list', name: 'player_list')]
     public function list(PlayerRepository $playerRepository): Response
     {

@@ -58,7 +58,7 @@ class Player
         return $this;
     }
 
-    public function getPosition(): string
+    public function getPosition(): ?string
     {
         return $this->position;
     }
