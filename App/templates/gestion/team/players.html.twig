@@ -49,9 +49,12 @@
                         </div>
                     </div>
                     <div class="mt-6 flex space-x-3">
-                        <a href="{{ path('team_edit', {'id': team.id}) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Modifier l'équipe
-                        </a>
+                        {% if is_granted('ROLE_ADMIN') %}
+    <a href="{{ path('team_edit', {'id': team.id}) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        Modifier l'équipe
+    </a>
+{% endif %}
+
                         <a href="{{ path('team_list') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Retour à la liste des équipes
                         </a>

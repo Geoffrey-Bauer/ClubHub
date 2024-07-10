@@ -34,14 +34,26 @@ class PlayerController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $player = $form->getData();
-                if ($player->getPosition() === null) {
-                    $player->setPosition('Aucun Poste'); // Définissez une valeur par défaut si nécessaire
+
+                if ($player->getIsCoach() === true && $player->getPosition() === null) {
+                    $player->setPosition('Entraineur');
+                } elseif ($player->getIsCoach() === false && $player->getPosition() === null) {
+                    $player->setPosition('Aucun poste');
                 }
+
                 $em->persist($player);
                 $em->flush();
-                $this->addFlash('success', 'Le joueur a été créé avec succès.');
+
+                if ($player->getIsCoach()) {
+                    $this->addFlash('success', 'L\'entraîneur a été créé avec succès.');
+                } else {
+                    $this->addFlash('success', 'Le joueur a été créé avec succès.');
+                }
+
                 return $this->redirectToRoute('player_list');
             }
+
+
 
 
             $em->persist($player);
@@ -80,9 +92,18 @@ class PlayerController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $player = $form->getData();
+            if ($player->getIsCoach() && $player->getPosition() === null) {
+                $player->setPosition('Entraineur');
+            } elseif (!$player->getIsCoach() && $player->getPosition() === null) {
+                $player->setPosition('Aucun poste');
+            }
+            $em->persist($player);
             $em->flush();
+            $this->addFlash('success', 'Les informations du joueur ont été mises à jour avec succès.');
             return $this->redirectToRoute('player_list');
         }
+
 
         return $this->render('gestion/player/edit.html.twig', [
             'form' => $form->createView(),
