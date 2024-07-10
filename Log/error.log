@@ -471,38 +471,7 @@
 2024/07/08 12:18:12 [notice] 1#1: start worker process 42
 2024/07/08 12:18:12 [notice] 1#1: start worker process 43
 2024/07/08 12:18:12 [notice] 1#1: start worker process 44
-<<<<<<< HEAD
-2024/07/10 06:44:25 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/10 06:44:30 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/10 06:44:39 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/10 06:44:45 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/10 06:44:50 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/10 06:44:57 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/10 06:45:06 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/10 06:45:17 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/10 06:45:35 [notice] 1#1: using the "epoll" event method
-2024/07/10 06:45:35 [notice] 1#1: nginx/1.26.1
-2024/07/10 06:45:35 [notice] 1#1: built by gcc 13.2.1 20231014 (Alpine 13.2.1_git20231014) 
-2024/07/10 06:45:35 [notice] 1#1: OS: Linux 6.5.0-41-generic
-2024/07/10 06:45:35 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
-2024/07/10 06:45:35 [notice] 1#1: start worker processes
-2024/07/10 06:45:35 [notice] 1#1: start worker process 29
-2024/07/10 06:45:35 [notice] 1#1: start worker process 30
-2024/07/10 06:45:35 [notice] 1#1: start worker process 31
-2024/07/10 06:45:35 [notice] 1#1: start worker process 32
-2024/07/10 06:45:35 [notice] 1#1: start worker process 33
-2024/07/10 06:45:35 [notice] 1#1: start worker process 34
-2024/07/10 06:45:35 [notice] 1#1: start worker process 35
-2024/07/10 06:45:35 [notice] 1#1: start worker process 36
-2024/07/10 06:45:35 [notice] 1#1: start worker process 37
-2024/07/10 06:45:35 [notice] 1#1: start worker process 38
-2024/07/10 06:45:35 [notice] 1#1: start worker process 39
-2024/07/10 06:45:35 [notice] 1#1: start worker process 40
-2024/07/10 06:45:35 [notice] 1#1: start worker process 41
-2024/07/10 06:45:35 [notice] 1#1: start worker process 42
-2024/07/10 06:45:35 [notice] 1#1: start worker process 43
-2024/07/10 06:45:35 [notice] 1#1: start worker process 44
-=======
+
 2024/07/09 07:39:03 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
 2024/07/09 07:39:08 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
 2024/07/09 07:39:14 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
@@ -532,7 +501,6 @@
 2024/07/09 07:39:51 [notice] 1#1: start worker process 42
 2024/07/09 07:39:51 [notice] 1#1: start worker process 43
 2024/07/09 07:39:51 [notice] 1#1: start worker process 44
->>>>>>> origin/main
 2024/07/10 08:44:56 [notice] 1#1: using the "epoll" event method
 2024/07/10 08:44:56 [notice] 1#1: nginx/1.26.1
 2024/07/10 08:44:56 [notice] 1#1: built by gcc 13.2.1 20231014 (Alpine 13.2.1_git20231014) 
