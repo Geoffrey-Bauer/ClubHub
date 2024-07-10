@@ -17,79 +17,79 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TeamController extends AbstractController
 {
-    #[Route('/team/new', name: 'team_new')]
-    public function new(Request $request, EntityManagerInterface $em): Response
-    {
-        $team = new Team();
-        $form = $this->createForm(TeamType::class, $team);
+  #[Route('/team/new', name: 'team_new')]
+  public function new(Request $request, EntityManagerInterface $em): Response
+  {
+    $team = new Team();
+    $form = $this->createForm(TeamType::class, $team);
 
-        $form->handleRequest($request);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($team);
-            $em->flush();
+    if ($form->isSubmitted() && $form->isValid()) {
+      $em->persist($team);
+      $em->flush();
 
-            return $this->redirectToRoute('team_list');
-        }
-
-        return $this->render('gestion/team/new.html.twig', [
-            'form' => $form->createView(),
-        ]);
+      return $this->redirectToRoute('team_list');
     }
 
+    return $this->render('gestion/team/new.html.twig', [
+      'form' => $form->createView(),
+    ]);
+  }
 
-    #[Route('/team/list/', name: 'team_list')]
 
-    public function list(TeamRepository $teamRepository): Response
-    {
-        // Récupérer toutes les équipes de la base de données
-        $teams = $teamRepository->findAllTeams();
+  #[Route('/team/list/', name: 'team_list')]
 
-        // Rendre la vue avec les équipes
-        return $this->render('gestion/team/list.html.twig', [
-            'teams' => $teams,
-        ]);
+  public function list(TeamRepository $teamRepository): Response
+  {
+    // Récupérer toutes les équipes de la base de données
+    $teams = $teamRepository->findAllTeams();
+
+    // Rendre la vue avec les équipes
+    return $this->render('gestion/team/list.html.twig', [
+      'teams' => $teams,
+    ]);
+  }
+
+
+  #[Route('/team/edit/{id}', name: 'team_edit')]
+  public function edit(Request $request, Team $team, EntityManagerInterface $em): Response
+  {
+    $form = $this->createForm(TeamType::class, $team);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+      $em->flush();
+      return $this->redirectToRoute('team_list');
     }
 
-
-    #[Route('/team/edit/{id}', name: 'team_edit')]
-    public function edit(Request $request, Team $team, EntityManagerInterface $em): Response
-    {
-        $form = $this->createForm(TeamType::class, $team);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->flush();
-            return $this->redirectToRoute('team_list');
-        }
-
-        return $this->render('gestion/team/edit.html.twig', [
-            'form' => $form->createView(),
-            'team' => $team,
-        ]);
-    }
+    return $this->render('gestion/team/edit.html.twig', [
+      'form' => $form->createView(),
+      'team' => $team,
+    ]);
+  }
 
 
-    #[Route('/team/delete/{id}', name: 'team_delete')]
-    public function delete(Team $team, EntityManagerInterface $em): RedirectResponse
-    {
-        $em->remove($team);
-        $em->flush();
+  #[Route('/team/delete/{id}', name: 'team_delete')]
+  public function delete(Team $team, EntityManagerInterface $em): RedirectResponse
+  {
+    $em->remove($team);
+    $em->flush();
 
-        $this->addFlash('success', 'L\'équipe a été supprimée avec succès.');
+    $this->addFlash('success', 'L\'équipe a été supprimée avec succès.');
 
-        return $this->redirectToRoute('team_list');
-    }
+    return $this->redirectToRoute('team_list');
+  }
 
-    #[Route('/team/{id}/players', name: 'team_players')]
-    public function teamPlayers(Team $team): Response
-    {
-        $players = $team->getPlayers();
+  #[Route('/team/{id}/players', name: 'team_players')]
+  public function teamPlayers(Team $team): Response
+  {
+    $players = $team->getPlayers();
 
-        return $this->render('gestion/team/players.html.twig', [
-            'team' => $team,
-            'players' => $players,
-        ]);
-    }
-    // Ajoutez d'autres actions si nécessaire...
+    return $this->render('gestion/team/players.html.twig', [
+      'team' => $team,
+      'players' => $players,
+    ]);
+  }
+  // Ajoutez d'autres actions si nécessaire...
 }

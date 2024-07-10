@@ -14,7 +14,8 @@
                             <a href="{{ path('app_home') }}" class="text-gray-300 hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Tableau de bord</a>
                             <a href="{{ path('team_list') }}" class="text-gray-300 hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Équipes</a>
                             <a href="{{ path('player_list') }}" class="text-gray-300 hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Joueurs</a>
-                            <a href="#" class="text-gray-300 hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Matchs</a>
+                            <a href="{{ path('planning_match_list') }}" class="text-gray-300 hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Matchs</a>
+                            <a href="{{ path('planning_training_list') }}" class="text-gray-300 hover:bg-blue-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Entraînement</a>
                         </div>
                     </div>
                     <div class="ml-3 relative" x-data="{ open: false }">
