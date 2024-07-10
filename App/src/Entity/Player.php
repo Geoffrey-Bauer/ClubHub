@@ -5,11 +5,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PlayerRepository;
 
-
-
 #[ORM\Entity(repositoryClass: PlayerRepository::class)]
 #[ORM\Table(name: '`player`')]
-
 class Player
 {
     #[ORM\Id]
@@ -26,8 +23,8 @@ class Player
     #[ORM\Column(length: 255)]
     private ?string $position = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $equipe = null;
+    #[ORM\ManyToOne(targetEntity: Team::class, inversedBy: 'players')]
+    private ?Team $team = null;
 
     #[ORM\Column]
     private ?bool $isCoach = null;
@@ -54,9 +51,9 @@ class Player
         return $this->firstname;
     }
 
-    public function setFirstname(string $fistname): static
+    public function setFirstname(string $firstname): static
     {
-        $this->firstname = $fistname;
+        $this->firstname = $firstname;
 
         return $this;
     }
@@ -73,14 +70,14 @@ class Player
         return $this;
     }
 
-    public function getEquipe(): string
+    public function getTeam(): ?Team
     {
-        return $this->equipe;
+        return $this->team;
     }
 
-    public function setEquipe(string $equipe): static
+    public function setTeam(?Team $team): static
     {
-        $this->equipe = $equipe;
+        $this->team = $team;
 
         return $this;
     }

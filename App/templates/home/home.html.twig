@@ -2,64 +2,141 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil - Gestion Club de Football{% endblock %}
+{% block title %}Tableau de bord - FootManager Pro{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <div class="container mx-auto px-4 py-8">
-        <header class="mb-8 flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-blue-600">Gestion Club de Football</h1>
+    <div class="min-h-screen bg-gray-100">
+        {% include '_templates/_nav.html.twig' %}
 
-            {% if app.user %}
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                        Menu
-                    </button>
-                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
-                        <div class="py-1">
-                            {% if is_granted('ROLE_ADMIN') %}
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gestion des effectifs</a>
-                            {% endif %}
-                            {% if is_granted('ROLE_COACH') %}
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gestion des plannings</a>
-                            {% endif %}
-                            {% if not is_granted('ROLE_ADMIN') and not is_granted('ROLE_COACH') %}
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gestion du compte</a>
-                            {% endif %}
-                            <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Déconnexion</a>
+        <header class="bg-white shadow">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-gray-900">
+                    Tableau de bord
+                </h1>
+                <div class="flex space-x-4">
+                    <a href="{{ path('player_new') }}">
+                        <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-plus mr-2"></i>Nouveau match
+                        </button>
+
+                    </a>
+                    <a href="{{ path('player_new') }}">
+                        <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                            <i class="fas fa-user-plus mr-2"></i>Ajouter un joueur
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+                        <div class="p-6">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                                <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>Prochains matchs
+                            </h3>
+                            <ul class="divide-y divide-gray-200">
+                                <li class="py-4">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <span class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
+                                                <i class="fas fa-futbol text-3xl text-gray-400 flex items-center justify-center h-full"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900 truncate">
+                                                FC Barcelona vs Real Madrid
+                                            </p>
+                                            <p class="text-sm text-gray-500 truncate">
+                                                15 Juillet 2024, 20:00
+                                            </p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- Ajoutez d'autres matchs ici -->
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+                        <div class="p-6">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                                <i class="fas fa-chart-line mr-2 text-green-500"></i>Statistiques de l'équipe
+                            </h3>
+                            <div class="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-3">
+                                <div class="bg-blue-100 overflow-hidden shadow rounded-lg">
+                                    <div class="px-4 py-5 sm:p-6">
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Victoires
+                                        </dt>
+                                        <dd class="mt-1 text-3xl font-semibold text-blue-800">
+                                            12
+                                        </dd>
+                                    </div>
+                                </div>
+                                <div class="bg-green-100 overflow-hidden shadow rounded-lg">
+                                    <div class="px-4 py-5 sm:p-6">
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Buts marqués
+                                        </dt>
+                                        <dd class="mt-1 text-3xl font-semibold text-green-800">
+                                            35
+                                        </dd>
+                                    </div>
+                                </div>
+                                <div class="bg-red-100 overflow-hidden shadow rounded-lg">
+                                    <div class="px-4 py-5 sm:p-6">
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Buts encaissés
+                                        </dt>
+                                        <dd class="mt-1 text-3xl font-semibold text-red-800">
+                                            18
+                                        </dd>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+                        <div class="p-6">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                                <i class="fas fa-bullhorn mr-2 text-yellow-500"></i>Annonces
+                            </h3>
+                            <ul class="divide-y divide-gray-200">
+                                <li class="py-4">
+                                    <div class="flex space-x-3">
+                                        <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                                        <div class="flex-1 space-y-1">
+                                            <div class="flex items-center justify-between">
+                                                <h3 class="text-sm font-medium">Nouvel entraînement</h3>
+                                                <p class="text-sm text-gray-500">2h</p>
+                                            </div>
+                                            <p class="text-sm text-gray-500">
+                                                Entraînement spécial prévu ce samedi à 10h.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- Ajoutez d'autres annonces ici -->
+                            </ul>
                         </div>
                     </div>
                 </div>
-            {% else %}
-                <div>
-                    <a href="{{ path('app_login') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2">Connexion</a>
-                    <a href="{{ path('app_register') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Inscription</a>
-                </div>
-            {% endif %}
-        </header>
-
-        <nav class="mb-8">
-            <ul class="flex space-x-4">
-                <li><a href="#" class="text-blue-500 hover:text-blue-700">Accueil</a></li>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <li><a href="#" class="text-blue-500 hover:text-blue-700">Administration</a></li>
-                    <li><a href="#" class="text-blue-500 hover:text-blue-700">Finances</a></li>
-                {% endif %}
-                {% if is_granted('ROLE_COACH') or is_granted('ROLE_ADMIN') %}
-                    <li><a href="#" class="text-blue-500 hover:text-blue-700">Équipes</a></li>
-                    <li><a href="#" class="text-blue-500 hover:text-blue-700">Entraînements</a></li>
-                {% endif %}
-                <li><a href="#" class="text-blue-500 hover:text-blue-700">Calendrier</a></li>
-            </ul>
-        </nav>
-
-        <main>
-            {# Le reste du contenu reste inchangé #}
-            {# ... #}
+            </div>
         </main>
     </div>
 {% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-{% endblock %}

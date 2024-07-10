@@ -1,34 +1,106 @@
-{# templates/gestion/player/list.html.twig #}
 {% extends 'base.html.twig' %}
 
+{% block title %}Liste des joueurs - ClubHub{% endblock %}
+
 {% block body %}
-    <h1>Liste des joueurs</h1>
-    {% if players is empty %}
-        <p>Aucun joueur trouvé.</p>
-    {% else %}
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nom</th>
-                    <th>Prénom</th>
-                    <th>Position</th>
-                    <th>Équipe</th>
-                    <th>Coach</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for player in players %}
-                    <tr>
-                        <td>{{ player.id }}</td>
-                        <td>{{ player.lastname }}</td>
-                        <td>{{ player.firstname }}</td>
-                        <td>{{ player.position }}</td>
-                        <td>{{ player.equipe }}</td>
-                        <td>{{ player.isCoach ? 'Oui' : 'Non' }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+    <div class="min-h-screen bg-gray-100">
+        {% include '_templates/_nav.html.twig' %}
+
+        <div class="py-10">
+            <header>
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h1 class="text-3xl font-bold leading-tight text-gray-900">Gestion des joueurs</h1>
+                </div>
+            </header>
+            <main>
+                <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <!-- Flash messages -->
+                    {% for message in app.flashes('success') %}
+                        <div class="mt-4 rounded-md bg-green-50 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-green-800">{{ message }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
+                        <div class="px-4 py-5 border-b border-gray-200 sm:px-6 flex justify-between items-center">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900">Liste des joueurs par équipe</h3>
+                            <a href="{{ path('player_new') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-150">
+                                <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                                </svg>
+                                Ajouter un joueur
+                            </a>
+                        </div>
+                        <div class="bg-white">
+                            {% set teams = {} %}
+                            {% for player in players %}
+                                {% set teamName = player.team ? player.team.name : 'Sans équipe' %}
+                                {% set teams = teams|merge({(teamName): teams[teamName]|default([])|merge([player])}) %}
+                            {% endfor %}
+
+                            {% for teamName, teamPlayers in teams %}
+                                <div x-data="{ open: false }" class="border-b border-gray-200 last:border-b-0">
+                                    <button @click="open = !open" class="w-full px-4 py-4 flex items-center justify-between text-left focus:outline-none hover:bg-gray-50 transition-colors duration-150">
+                                        <span class="flex items-center">
+                                            <span class="text-sm font-semibold text-gray-900">{{ teamName }}</span>
+                                            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                                {{ teamPlayers|length }}
+                                            </span>
+                                        </span>
+                                        <svg class="h-5 w-5 text-gray-400 transform transition-transform duration-150" :class="{'rotate-180': open}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="bg-gray-50">
+                                        <ul class="divide-y divide-gray-200">
+                                            {% for player in teamPlayers %}
+                                                <li class="px-4 py-4 sm:px-6 hover:bg-gray-100 transition-colors duration-150">
+                                                    <div class="flex items-center justify-between">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                                                <span class="text-sm font-medium text-indigo-800">{{ player.firstname|first }}{{ player.lastname|first }}</span>
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="text-sm font-medium text-gray-900">{{ player.firstname }} {{ player.lastname }}</div>
+                                                                <div class="text-sm text-gray-500">{{ player.position }}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex items-center space-x-2">
+                                                            <a href="{{ path('player_edit', {'id': player.id}) }}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-150">
+                                                                <svg class="-ml-1 mr-2 h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                                </svg>
+                                                                Modifier
+                                                            </a>
+                                                            <button onclick="if(confirm('Êtes-vous sûr de vouloir supprimer ce joueur ?')) location.href='{{ path('player_delete', {'id': player.id}) }}'" class="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150">
+                                                                <svg class="-ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                                                </svg>
+                                                                Supprimer
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p class="text-center py-4 text-gray-500">Aucun joueur trouvé</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
 {% endblock %}
