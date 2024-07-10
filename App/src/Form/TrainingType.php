@@ -18,9 +18,10 @@ class TrainingType extends AbstractType
     $builder
       ->add('date', DateTimeType::class, [
         'widget' => 'single_text',
-        'label' => 'Date et heure du match',
         'html5' => true,
         'attr' => ['class' => 'form-control'],
+        'model_timezone' => 'UTC',
+        'view_timezone' => 'Europe/Paris',
       ])
       ->add('team', EntityType::class, [
         'class' => Team::class,
