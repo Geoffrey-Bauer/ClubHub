@@ -16,7 +16,7 @@
                 <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
                     <div class="mt-8 bg-white shadow-lg rounded-lg overflow-hidden">
                         <div class="px-4 py-5 sm:p-6">
-                            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                            {{ form_start(form, {'attr': {'class': 'space-y-6', 'id': 'player-form'}}) }}
                             {% for field in form %}
                                 {% if field.vars.name != '_token' %}
                                     <div>
@@ -27,7 +27,7 @@
                                                 </div>
                                                 <div class="ml-3 text-sm">
                                                     {{ form_label(field, 'Entraîneur', {'label_attr': {'class': 'font-medium text-gray-700'}}) }}
-                                                    <p class="text-gray-500">Cochez si le joueur est aussi entraîneur</p>
+                                                    <p class="text-gray-500">Cochez si c'est un entraineur de l'équipe</p>
                                                 </div>
                                             </div>
                                         {% else %}
@@ -65,4 +65,28 @@
             </main>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('player-form');
+            var isCoachCheckbox = form.querySelector('input[name$="[isCoach]"]');
+            var positionInput = form.querySelector('input[name$="[position]"]');
+
+            function togglePositionInput() {
+                if (isCoachCheckbox.checked) {
+                    positionInput.value = 'Entraineur';
+                    positionInput.disabled = true;
+                } else {
+                    positionInput.value = '';
+                    positionInput.disabled = false;
+                }
+            }
+
+            // Appel initial de la fonction
+            togglePositionInput();
+
+            // Ajout de l'écouteur d'événement sur le changement de la case à cocher
+            isCoachCheckbox.addEventListener('change', togglePositionInput);
+        });
+    </script>
 {% endblock %}
