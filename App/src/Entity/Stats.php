@@ -13,16 +13,16 @@ class Stats
   #[ORM\Column]
   private ?int $id = null;
 
-  #[ORM\Column]
+  #[ORM\Column(nullable: true)]
   private ?int $goal = null;
 
-  #[ORM\Column]
+  #[ORM\Column(nullable: true)]
   private ?int $assists = null;
 
-  #[ORM\Column]
+  #[ORM\Column(nullable: true)]
   private ?int $yellow_card = null;
 
-  #[ORM\Column]
+  #[ORM\Column(nullable: true)]
   private ?int $red_card = null;
 
   #[ORM\ManyToOne]
@@ -32,6 +32,9 @@ class Stats
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: false)]
   private ?Battle $battle = null;
+
+  #[ORM\Column(length: 50, nullable: true)]
+  private ?string $time = null;
 
   public function getId(): ?int
   {
@@ -43,7 +46,7 @@ class Stats
     return $this->goal;
   }
 
-  public function setGoal(int $goal): static
+  public function setGoal(?int $goal): static
   {
     $this->goal = $goal;
 
@@ -55,7 +58,7 @@ class Stats
     return $this->assists;
   }
 
-  public function setAssists(int $assists): static
+  public function setAssists(?int $assists): static
   {
     $this->assists = $assists;
 
@@ -67,7 +70,7 @@ class Stats
     return $this->yellow_card;
   }
 
-  public function setYellowCard(int $yellow_card): static
+  public function setYellowCard(?int $yellow_card): static
   {
     $this->yellow_card = $yellow_card;
 
@@ -79,7 +82,7 @@ class Stats
     return $this->red_card;
   }
 
-  public function setRedCard(int $red_card): static
+  public function setRedCard(?int $red_card): static
   {
     $this->red_card = $red_card;
 
@@ -106,6 +109,18 @@ class Stats
   public function setBattle(?Battle $battle): static
   {
     $this->battle = $battle;
+
+    return $this;
+  }
+
+  public function getTime(): ?string
+  {
+    return $this->time;
+  }
+
+  public function setTime(?string $time): static
+  {
+    $this->time = $time;
 
     return $this;
   }
