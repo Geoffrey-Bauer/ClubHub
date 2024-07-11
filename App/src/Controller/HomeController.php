@@ -14,9 +14,21 @@ class HomeController extends AbstractController
   public function index(BattleRepository $battleRepository, TrainingRepository $trainingRepository): Response
   {
     $now = new \DateTime();
-    $futureBattles = $battleRepository->createQueryBuilder('b')
-      ->where('b.date > :now')
-      ->setParameter('now', $now)
+    $today = new \DateTime('today');
+    $tomorrow = (new \DateTime('today'))->modify('+1 day');
+
+    $battles = $battleRepository->createQueryBuilder('b')
+      ->where('b.date >= :today')
+      ->andWhere('b.date < :tomorrow')
+      ->setParameter('today', $today)
+      ->setParameter('tomorrow', $tomorrow)
+      ->orderBy('b.date', 'ASC')
+      ->getQuery()
+      ->getResult();
+
+    $upcomingBattles = $battleRepository->createQueryBuilder('b')
+      ->where('b.date > :tomorrow')
+      ->setParameter('tomorrow', $tomorrow)
       ->orderBy('b.date', 'ASC')
       ->setMaxResults(5)
       ->getQuery()
@@ -32,7 +44,8 @@ class HomeController extends AbstractController
 
     return $this->render('home/home.html.twig', [
       'controller_name' => 'HomeController',
-      'battles' => $futureBattles,
+      'battles' => $battles,
+      'upcomingBattles' => $upcomingBattles,
       'trainings' => $upcomingTrainings,
     ]);
   }
