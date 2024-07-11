@@ -29,8 +29,17 @@
                     <a href="{{ path('player_new') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out flex items-center">
                         <i class="fas fa-plus mr-2"></i>Nouveau match
                     </a>
+
                     <a href="{{ path('player_new') }}" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out flex items-center">
                         <i class="fas fa-user-plus mr-2"></i>Ajouter un joueur
+
+                    <a href="{{ path('player_new') }}">
+                       {% if is_granted('ROLE_ADMIN') %}
+    <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+        <i class="fas fa-user-plus mr-2"></i>Ajouter un joueur
+    </button>
+{% endif %}
+
                     </a>
                 </div>
             </div>
