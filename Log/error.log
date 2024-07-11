@@ -1061,34 +1061,4 @@
 2024/07/10 12:53:52 [notice] 1#1: start worker process 42
 2024/07/10 12:53:52 [notice] 1#1: start worker process 43
 2024/07/10 12:53:52 [notice] 1#1: start worker process 44
-2024/07/11 06:44:54 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/11 06:44:59 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/11 06:45:05 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/11 06:45:11 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/11 06:45:17 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/11 06:45:21 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/11 06:45:30 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/11 06:45:42 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/11 06:46:00 [emerg] 1#1: host not found in upstream "clubphp" in /etc/nginx/conf.d/default.conf:16
-2024/07/11 06:46:31 [notice] 1#1: using the "epoll" event method
-2024/07/11 06:46:31 [notice] 1#1: nginx/1.26.1
-2024/07/11 06:46:31 [notice] 1#1: built by gcc 13.2.1 20231014 (Alpine 13.2.1_git20231014) 
-2024/07/11 06:46:31 [notice] 1#1: OS: Linux 6.5.0-41-generic
-2024/07/11 06:46:31 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
-2024/07/11 06:46:31 [notice] 1#1: start worker processes
-2024/07/11 06:46:31 [notice] 1#1: start worker process 29
-2024/07/11 06:46:31 [notice] 1#1: start worker process 30
-2024/07/11 06:46:31 [notice] 1#1: start worker process 31
-2024/07/11 06:46:31 [notice] 1#1: start worker process 32
-2024/07/11 06:46:31 [notice] 1#1: start worker process 33
-2024/07/11 06:46:31 [notice] 1#1: start worker process 34
-2024/07/11 06:46:31 [notice] 1#1: start worker process 35
-2024/07/11 06:46:31 [notice] 1#1: start worker process 36
-2024/07/11 06:46:31 [notice] 1#1: start worker process 37
-2024/07/11 06:46:31 [notice] 1#1: start worker process 38
-2024/07/11 06:46:31 [notice] 1#1: start worker process 39
-2024/07/11 06:46:31 [notice] 1#1: start worker process 40
-2024/07/11 06:46:31 [notice] 1#1: start worker process 41
-2024/07/11 06:46:31 [notice] 1#1: start worker process 42
-2024/07/11 06:46:31 [notice] 1#1: start worker process 43
-2024/07/11 06:46:31 [notice] 1#1: start worker process 44
+
