@@ -25,23 +25,16 @@
                 <h1 class="text-3xl font-bold text-gray-900">
                     Tableau de bord
                 </h1>
-                <div class="flex space-x-4">
-                    <a href="{{ path('player_new') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out flex items-center">
-                        <i class="fas fa-plus mr-2"></i>Nouveau match
-                    </a>
-
-                    <a href="{{ path('player_new') }}" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out flex items-center">
-                        <i class="fas fa-user-plus mr-2"></i>Ajouter un joueur
-
-                    <a href="{{ path('player_new') }}">
-                       {% if is_granted('ROLE_ADMIN') %}
-    <button class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-        <i class="fas fa-user-plus mr-2"></i>Ajouter un joueur
-    </button>
-{% endif %}
-
-                    </a>
-                </div>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <div class="flex space-x-4">
+                        <a href="{{ path('planning_match_new') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out flex items-center">
+                            <i class="fas fa-plus mr-2"></i>Nouveau match
+                        </a>
+                        <a href="{{ path('player_new') }}" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out flex items-center">
+                            <i class="fas fa-user-plus mr-2"></i>Ajouter un joueur
+                        </a>
+                    </div>
+                {% endif %}
             </div>
         </header>
 
@@ -186,7 +179,7 @@
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <a href="#" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                                                    <a href="{{ path('show_match_stats', {'id': battle.id}) }}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
                                                         Voir les détails
                                                     </a>
                                                 </div>
@@ -238,7 +231,7 @@
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <a href="#" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                                                    <a href="{{ path('show_match_stats', {'id': battle.id}) }}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
                                                         Voir les détails
                                                     </a>
                                                 </div>
