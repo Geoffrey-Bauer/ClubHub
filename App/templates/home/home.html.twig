@@ -46,33 +46,40 @@
         <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <div class="px-4 py-6 sm:px-0">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
                     <div class="bg-white overflow-hidden shadow-sm rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
                                 <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>Prochains matchs
                             </h3>
                             <ul class="divide-y divide-gray-200">
-                                <li class="py-4">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="flex-shrink-0">
-                                            <span class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
-                                                <i class="fas fa-futbol text-3xl text-gray-400 flex items-center justify-center h-full"></i>
-                                            </span>
+                                {% for battle in battles %}
+                                    <li class="py-4">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="flex-shrink-0">
+                            <span class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
+                                <i class="fas fa-futbol text-3xl text-gray-400 flex items-center justify-center h-full"></i>
+                            </span>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-gray-900 truncate">
+                                                    {{ battle.teamDomicile.name }} vs {{ battle.teamExterieur.name }}
+                                                </p>
+                                                <p class="text-sm text-gray-500 truncate">
+                                                    {{ battle.date|date('d F Y, H:i', 'Europe/Paris') }}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-medium text-gray-900 truncate">
-                                                FC Barcelona vs Real Madrid
-                                            </p>
-                                            <p class="text-sm text-gray-500 truncate">
-                                                15 Juillet 2024, 20:00
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <!-- Ajoutez d'autres matchs ici -->
+                                    </li>
+                                {% else %}
+                                    <li class="py-4">
+                                        <p class="text-sm text-gray-500">Aucun match à venir.</p>
+                                    </li>
+                                {% endfor %}
                             </ul>
                         </div>
                     </div>
+
                     <div class="bg-white overflow-hidden shadow-sm rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
@@ -112,30 +119,42 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="bg-white overflow-hidden shadow-sm rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-                                <i class="fas fa-bullhorn mr-2 text-yellow-500"></i>Annonces
+                                <i class="fas fa-dumbbell mr-2 text-green-500"></i>Entraînements à venir
                             </h3>
                             <ul class="divide-y divide-gray-200">
-                                <li class="py-4">
-                                    <div class="flex space-x-3">
-                                        <i class="fas fa-info-circle text-blue-500 mt-1"></i>
-                                        <div class="flex-1 space-y-1">
-                                            <div class="flex items-center justify-between">
-                                                <h3 class="text-sm font-medium">Nouvel entraînement</h3>
-                                                <p class="text-sm text-gray-500">2h</p>
+                                {% for training in trainings %}
+                                    <li class="py-4">
+                                        <div class="flex space-x-3">
+                                            <i class="fas fa-calendar-alt text-green-500 mt-1"></i>
+                                            <div class="flex-1 space-y-1">
+                                                <div class="flex items-center justify-between">
+                                                    <h3 class="text-sm font-medium">Entraînement</h3>
+                                                    <p class="text-sm text-gray-500">{{ training.date|date('d/m/Y H:i') }}</p>
+                                                </div>
+                                                <p class="text-sm text-gray-500">
+                                                    Entraînement de l'équipe {% if training.team %}{{ training.team.name }}{% else %}(Équipe non spécifiée){% endif %}
+                                                </p>
                                             </div>
-                                            <p class="text-sm text-gray-500">
-                                                Entraînement spécial prévu ce samedi à 10h.
-                                            </p>
                                         </div>
-                                    </div>
-                                </li>
-                                <!-- Ajoutez d'autres annonces ici -->
+                                    </li>
+                                {% else %}
+                                    <li class="py-4">
+                                        <div class="flex space-x-3">
+                                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                                            <div class="flex-1 space-y-1">
+                                                <p class="text-sm text-gray-500">Aucun entraînement prévu pour le moment.</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                {% endfor %}
                             </ul>
                         </div>
                     </div>
+
                 </div>
             </div>
         </main>
