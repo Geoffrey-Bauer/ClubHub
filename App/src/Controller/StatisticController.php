@@ -5,24 +5,38 @@ namespace App\Controller;
 use App\Entity\Battle;
 use App\Entity\Player;
 use App\Entity\Stats;
-use App\Entity\Team;
-use App\Form\StatsType;
 use App\Repository\BattleRepository;
 use App\Repository\StatsRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\PlayerRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Doctrine\ORM\EntityManagerInterface;
 
 class StatisticController extends AbstractController
 {
-  private $entityManager;
+  private const EVENT_GOAL = 'goal';
+  private const EVENT_YELLOW_CARD = 'yellowCard';
+  private const EVENT_RED_CARD = 'redCard';
+  private const MATCH_DURATION = 90;
+  private const HALF_TIME_DURATION = 15;
 
-  public function __construct(EntityManagerInterface $entityManager)
-  {
+  private $entityManager;
+  private $statsRepository;
+  private $battleRepository;
+  private $playerRepository;
+
+  public function __construct(
+    EntityManagerInterface $entityManager,
+    StatsRepository $statsRepository,
+    BattleRepository $battleRepository,
+    PlayerRepository $playerRepository
+  ) {
     $this->entityManager = $entityManager;
+    $this->statsRepository = $statsRepository;
+    $this->battleRepository = $battleRepository;
+    $this->playerRepository = $playerRepository;
   }
 
 
@@ -55,71 +69,25 @@ class StatisticController extends AbstractController
     ]);
   }
   #[Route('/match/{id}/stats', name: 'show_match_stats')]
-  public function showMatchStats(Battle $battle, BattleRepository $battleRepository, StatsRepository $statsRepository): Response
+  public function showMatchStats(Battle $battle): Response
   {
     $teamDomicile = $battle->getTeamDomicile();
     $teamExterieur = $battle->getTeamExterieur();
 
-    // Vérifiez si les équipes sont chargées
-    if ($teamDomicile->getName() === null || $teamExterieur->getName() === null) {
-      // Si les noms des équipes ne sont pas chargés, utilisez le repository pour les récupérer
-      $teamDomicile = $this->getDoctrine()
-        ->getRepository(Team::class)
-        ->find($teamDomicile->getId());
-
-      $teamExterieur = $this->getDoctrine()
-        ->getRepository(Team::class)
-        ->find($teamExterieur->getId());
-    }
-
-    // Récupérez les joueurs de chaque équipe
     $playersDomicile = $teamDomicile->getPlayers();
     $playersExterieur = $teamExterieur->getPlayers();
 
-    // Récupérez toutes les statistiques pour ce match spécifique
-    $allStats = $statsRepository->findBy(['battle' => $battle]);
+    $allStats = $this->statsRepository->findBy(['battle' => $battle]);
 
-    // Organisez les statistiques par équipe et par joueur
-    $statsDomicile = [];
-    $statsExterieur = [];
-
-    foreach ($allStats as $stat) {
-      $player = $stat->getPlayer();
-      if ($player->getTeam() === $teamDomicile) {
-        $statsDomicile[$player->getId()] = $stat;
-      } elseif ($player->getTeam() === $teamExterieur) {
-        $statsExterieur[$player->getId()] = $stat;
-      }
+    if (empty($allStats)) {
+      $this->generateMatchStats($battle);
+      $allStats = $this->statsRepository->findBy(['battle' => $battle]);
     }
 
-    // Créez des statistiques vides pour les joueurs qui n'en ont pas encore
-    foreach ($playersDomicile as $player) {
-      if (!isset($statsDomicile[$player->getId()])) {
-        $newStat = new Stats();
-        $newStat->setPlayer($player);
-        $newStat->setBattle($battle);
-        $newStat->setGoal(0);
-        $newStat->setAssists(0);
-        $newStat->setYellowCard(0);
-        $newStat->setRedCard(0);
-        $statsRepository->save($newStat, true);
-        $statsDomicile[$player->getId()] = $newStat;
-      }
-    }
+    $statsDomicile = $this->organizeStatsByTeam($allStats, $teamDomicile);
+    $statsExterieur = $this->organizeStatsByTeam($allStats, $teamExterieur);
 
-    foreach ($playersExterieur as $player) {
-      if (!isset($statsExterieur[$player->getId()])) {
-        $newStat = new Stats();
-        $newStat->setPlayer($player);
-        $newStat->setBattle($battle);
-        $newStat->setGoal(0);
-        $newStat->setAssists(0);
-        $newStat->setYellowCard(0);
-        $newStat->setRedCard(0);
-        $statsRepository->save($newStat, true);
-        $statsExterieur[$player->getId()] = $newStat;
-      }
-    }
+    $events = $this->getEventsFromStats($allStats);
 
     return $this->render('stats/match/show.html.twig', [
       'battle' => $battle,
@@ -129,41 +97,183 @@ class StatisticController extends AbstractController
       'playersExterieur' => $playersExterieur,
       'statsDomicile' => $statsDomicile,
       'statsExterieur' => $statsExterieur,
+      'events' => $events,
     ]);
   }
 
-  #[Route('/match/{battle}/player/{player}/edit-stats', name: 'edit_player_stats', methods: ['POST'])]
-  public function editPlayerStats(Request $request, Battle $battle, Player $player, StatsRepository $statsRepository): JsonResponse
+  private function generateMatchStats(Battle $battle)
   {
-    $stats = $statsRepository->findOneBy(['battle' => $battle, 'player' => $player]);
+    $playersDomicile = $battle->getTeamDomicile()->getPlayers();
+    $playersExterieur = $battle->getTeamExterieur()->getPlayers();
 
-    if (!$stats) {
-      $stats = new Stats();
-      $stats->setBattle($battle);
-      $stats->setPlayer($player);
+    $startTime = $battle->getDate();
+    $endTime = (clone $startTime)->modify('+' . self::MATCH_DURATION . ' minutes');
+
+    $events = $this->generateRandomEvents($playersDomicile, $playersExterieur, $startTime, $endTime);
+
+    foreach ($events as $event) {
+      $stat = new Stats();
+      $stat->setPlayer($event['player']);
+      $stat->setBattle($battle);
+      $stat->setTime($event['time']->format('H:i'));
+
+      switch ($event['type']) {
+        case self::EVENT_GOAL:
+          $stat->setGoal(1);
+          $this->updateScore($battle, $event['player']);
+          break;
+        case self::EVENT_YELLOW_CARD:
+          $stat->setYellowCard(1);
+          break;
+        case self::EVENT_RED_CARD:
+          $stat->setRedCard(1);
+          break;
+      }
+
+      $this->entityManager->persist($stat);
     }
 
-    $oldGoal = $stats->getGoal();
-    $stats->setGoal($request->request->getInt('goal'));
-    $stats->setAssists($request->request->getInt('assists'));
-    $stats->setYellowCard($request->request->getInt('yellowCard'));
-    $stats->setRedCard($request->request->getInt('redCard'));
+    $this->entityManager->flush();
+  }
 
-    $statsRepository->save($stats, true);
+  private function generateRandomEvents($playersDomicile, $playersExterieur, \DateTime $startTime, \DateTime $endTime): array
+  {
+    $events = [];
+    $allPlayers = array_merge($playersDomicile->toArray(), $playersExterieur->toArray());
 
-    $battle->updateScore($player, $oldGoal, $stats->getGoal());
+    $currentTime = clone $startTime;
+    $halfTimeStart = (clone $startTime)->modify('+45 minutes');
+    $halfTimeEnd = (clone $halfTimeStart)->modify('+' . self::HALF_TIME_DURATION . ' minutes');
+
+    while ($currentTime <= $endTime) {
+      if ($currentTime >= $halfTimeStart && $currentTime < $halfTimeEnd) {
+        $currentTime = clone $halfTimeEnd;
+        continue;
+      }
+
+      if (rand(1, 100) <= 10) { // 10% chance d'un événement
+        $player = $allPlayers[array_rand($allPlayers)];
+        $eventType = $this->getRandomEventType();
+
+        $events[] = [
+          'type' => $eventType,
+          'player' => $player,
+          'time' => clone $currentTime,
+        ];
+      }
+      $currentTime->modify('+1 minute');
+    }
+
+    usort($events, function($a, $b) {
+      return $a['time'] <=> $b['time'];
+    });
+
+    return $events;
+  }
+
+  private function getRandomEventType(): string
+  {
+    $eventTypes = [self::EVENT_GOAL, self::EVENT_YELLOW_CARD, self::EVENT_RED_CARD];
+    return $eventTypes[array_rand($eventTypes)];
+  }
+
+  private function updateScore(Battle $battle, Player $player)
+  {
+    if ($player->getTeam() === $battle->getTeamDomicile()) {
+      $battle->setScoreDomicile($battle->getScoreDomicile() + 1);
+    } else {
+      $battle->setScoreExterieur($battle->getScoreExterieur() + 1);
+    }
+    $this->entityManager->persist($battle);
+  }
+
+  private function organizeStatsByTeam($allStats, $team): array
+  {
+    $teamStats = [];
+    foreach ($allStats as $stat) {
+      if ($stat->getPlayer()->getTeam() === $team) {
+        $teamStats[$stat->getPlayer()->getId()][] = $stat;
+      }
+    }
+    return $teamStats;
+  }
+
+  private function getEventsFromStats(array $allStats): array
+  {
+    $events = [];
+    foreach ($allStats as $stat) {
+      $eventType = $this->getEventTypeFromStat($stat);
+      if ($eventType) {
+        $events[] = [
+          'type' => $eventType,
+          'player' => $stat->getPlayer()->getFirstname() . ' ' . $stat->getPlayer()->getLastname(),
+          'time' => $stat->getTime(),
+        ];
+      }
+    }
+
+    usort($events, function($a, $b) {
+      return strcmp($a['time'], $b['time']);
+    });
+
+    return $events;
+  }
+
+  private function getEventTypeFromStat(Stats $stat): ?string
+  {
+    if ($stat->getGoal() > 0) return self::EVENT_GOAL;
+    if ($stat->getYellowCard() > 0) return self::EVENT_YELLOW_CARD;
+    if ($stat->getRedCard() > 0) return self::EVENT_RED_CARD;
+    return null;
+  }
+
+  #[Route('/match/{id}/edit', name: 'edit_match', methods: ['POST'])]
+  public function editMatch(Request $request, Battle $battle): Response
+  {
+    $newEndTime = new \DateTime($request->request->get('newEndTime'));
+    $startTime = $battle->getDate();
+    $maxEndTime = (clone $startTime)->modify('+' . self::MATCH_DURATION . ' minutes');
+
+    if ($newEndTime > $maxEndTime) {
+      $newEndTime = $maxEndTime;
+    }
+
+    $existingStats = $this->statsRepository->findBy(['battle' => $battle]);
+    $lastEventTime = !empty($existingStats) ? max(array_map(function($stat) {
+      return \DateTime::createFromFormat('H:i', $stat->getTime());
+    }, $existingStats)) : $startTime;
+
+    $newEvents = $this->generateRandomEvents(
+      $battle->getTeamDomicile()->getPlayers(),
+      $battle->getTeamExterieur()->getPlayers(),
+      $lastEventTime,
+      $newEndTime
+    );
+
+    foreach ($newEvents as $event) {
+      $stat = new Stats();
+      $stat->setPlayer($event['player']);
+      $stat->setBattle($battle);
+      $stat->setTime($event['time']->format('H:i'));
+
+      switch ($event['type']) {
+        case self::EVENT_GOAL:
+          $stat->setGoal(1);
+          $this->updateScore($battle, $event['player']);
+          break;
+        case self::EVENT_YELLOW_CARD:
+          $stat->setYellowCard(1);
+          break;
+        case self::EVENT_RED_CARD:
+          $stat->setRedCard(1);
+          break;
+      }
+
+      $this->entityManager->persist($stat);
+    }
+
     $this->entityManager->flush();
 
-    return $this->json([
-      'success' => true,
-      'stats' => [
-        'goal' => $stats->getGoal(),
-        'assists' => $stats->getAssists(),
-        'yellowCard' => $stats->getYellowCard(),
-        'redCard' => $stats->getRedCard(),
-      ],
-      'scoreDomicile' => $battle->getScoreDomicile(),
-      'scoreExterieur' => $battle->getScoreExterieur(),
-    ]);
+    return $this->redirectToRoute('show_match_stats', ['id' => $battle->getId()]);
   }
 }

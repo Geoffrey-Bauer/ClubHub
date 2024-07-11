@@ -7,6 +7,7 @@ use App\Entity\Training;
 use App\Form\BattleType;
 use App\Form\TrainingType;
 use App\Repository\BattleRepository;
+use App\Repository\StatsRepository;
 use App\Repository\TeamRepository;
 use App\Repository\TrainingRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -138,12 +139,28 @@ class PlanningController extends AbstractController
   }
 
   #[Route('/planning/match/{id}/delete', name: 'battle_delete')]
-  public function deleteMatch(Request $request, Battle $battle, EntityManagerInterface $em): Response
+  public function deleteMatch(Request $request, Battle $battle, EntityManagerInterface $em, StatsRepository $statsRepository): Response
   {
     if ($this->isCsrfTokenValid('delete'.$battle->getId(), $request->request->get('_token'))) {
-      $em->remove($battle);
-      $em->flush();
-      $this->addFlash('success', 'Le match a été supprimé avec succès.');
+      try {
+        // Récupérer toutes les statistiques liées à ce match
+        $stats = $statsRepository->findBy(['battle' => $battle]);
+
+        // Supprimer chaque statistique
+        foreach ($stats as $stat) {
+          $em->remove($stat);
+        }
+
+        // Supprimer le match
+        $em->remove($battle);
+
+        // Appliquer les changements dans la base de données
+        $em->flush();
+
+        $this->addFlash('success', 'Le match et toutes ses statistiques ont été supprimés avec succès.');
+      } catch (\Exception $e) {
+        $this->addFlash('error', 'Une erreur est survenue lors de la suppression du match : ' . $e->getMessage());
+      }
     } else {
       $this->addFlash('error', 'Token CSRF invalide.');
     }
