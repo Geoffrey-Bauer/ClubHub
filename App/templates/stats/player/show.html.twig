@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques de {{ player.name }}{% endblock %}
+
+{% block body %}
+    <h1>Statistiques de {{ player.name }}</h1>
+
+    <h2>Statistiques totales</h2>
+    <table class="table">
+        <tr>
+            <th>Matchs joués</th>
+            <th>Buts</th>
+            <th>Passes décisives</th>
+            <th>Cartons jaunes</th>
+            <th>Cartons rouges</th>
+        </tr>
+        <tr>
+            <td>{{ totalStats.matches }}</td>
+            <td>{{ totalStats.goals }}</td>
+            <td>{{ totalStats.assists }}</td>
+            <td>{{ totalStats.yellowCards }}</td>
+            <td>{{ totalStats.redCards }}</td>
+        </tr>
+    </table>
+
+    <h2>Statistiques par match</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Match</th>
+                <th>Buts</th>
+                <th>Passes décisives</th>
+                <th>Cartons jaunes</th>
+                <th>Cartons rouges</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for stat in playerStats %}
+            <tr>
+                <td>{{ stat.battle.teamDomicile.name }} vs {{ stat.battle.teamExterieur.name }}</td>
+                <td>{{ stat.goal }}</td>
+                <td>{{ stat.assists }}</td>
+                <td>{{ stat.yellowCard }}</td>
+                <td>{{ stat.redCard }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

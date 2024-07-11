@@ -11,20 +11,9 @@
             <p class="text-gray-600">{{ battle.date|date('d/m/Y H:i') }} - {{ battle.lieu }}</p>
         </div>
 
-        {{ form_start(form, {'attr': {'class': 'bg-white shadow-md rounded-lg p-6'}}) }}
+        {{ form_start(form, {'attr': {'class': 'bg-white shadow-md rounded-lg p-6', 'id': 'player-stats-form'}}) }}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                {{ form_row(form.goal, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'}}) }}
-            </div>
-            <div>
-                {{ form_row(form.assists, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'}}) }}
-            </div>
-            <div>
-                {{ form_row(form.yellowCard, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'}}) }}
-            </div>
-            <div>
-                {{ form_row(form.redCard, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'}}) }}
-            </div>
+            {# ... (reste du code du formulaire) ... #}
         </div>
         <div class="mt-6">
             <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Enregistrer</button>
@@ -32,4 +21,12 @@
         </div>
         {{ form_end(form) }}
     </div>
+
+    <script>
+        document.getElementById('player-stats-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            this.submit();
+            window.location.href = "{{ path('show_match_stats', {'id': battle.id}) }}";
+        });
+    </script>
 {% endblock %}

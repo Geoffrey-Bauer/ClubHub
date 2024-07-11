@@ -25,6 +25,35 @@ class StatisticController extends AbstractController
     $this->entityManager = $entityManager;
   }
 
+
+  #[Route('/player/{id}/stats', name: 'show_player_stats')]
+  public function showPlayerStats(Player $player, StatsRepository $statsRepository): Response
+  {
+    // Récupérez toutes les statistiques pour ce joueur
+    $playerStats = $statsRepository->findBy(['player' => $player]);
+
+    // Calculez les statistiques totales
+    $totalStats = [
+      'goals' => 0,
+      'assists' => 0,
+      'yellowCards' => 0,
+      'redCards' => 0,
+      'matches' => count($playerStats),
+    ];
+
+    foreach ($playerStats as $stat) {
+      $totalStats['goals'] += $stat->getGoal();
+      $totalStats['assists'] += $stat->getAssists();
+      $totalStats['yellowCards'] += $stat->getYellowCard();
+      $totalStats['redCards'] += $stat->getRedCard();
+    }
+
+    return $this->render('stats/player/show.html.twig', [
+      'player' => $player,
+      'playerStats' => $playerStats,
+      'totalStats' => $totalStats,
+    ]);
+  }
   #[Route('/match/{id}/stats', name: 'show_match_stats')]
   public function showMatchStats(Battle $battle, BattleRepository $battleRepository, StatsRepository $statsRepository): Response
   {
