@@ -11,33 +11,26 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class StatsRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Stats::class);
+  public function __construct(ManagerRegistry $registry)
+  {
+    parent::__construct($registry, Stats::class);
+  }
+
+  public function findByBattleId(int $battleId): array
+  {
+    return $this->createQueryBuilder('s')
+      ->where('s.battle = :battleId')
+      ->setParameter('battleId', $battleId)
+      ->getQuery()
+      ->getResult();
+  }
+
+  public function save(Stats $stats, bool $flush = true): void
+  {
+    $this->getEntityManager()->persist($stats);
+
+    if ($flush) {
+      $this->getEntityManager()->flush();
     }
-
-    //    /**
-    //     * @return Stats[] Returns an array of Stats objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Stats
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+  }
 }
