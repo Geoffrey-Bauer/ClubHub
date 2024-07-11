@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240710100956 extends AbstractMigration
+final class Version20240710125431 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,7 +20,7 @@ final class Version20240710100956 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE battle (id INT AUTO_INCREMENT NOT NULL, team_domicile_id INT NOT NULL, team_exterieur_id INT NOT NULL, date DATETIME NOT NULL, lieu VARCHAR(255) NOT NULL, score_domicile INT NOT NULL, score_exterieur INT NOT NULL, INDEX IDX_139917347E41B030 (team_domicile_id), INDEX IDX_13991734AF7398B2 (team_exterieur_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE battle (id INT AUTO_INCREMENT NOT NULL, team_domicile_id INT NOT NULL, team_exterieur_id INT NOT NULL, date DATETIME NOT NULL, lieu VARCHAR(255) NOT NULL, score_domicile INT DEFAULT NULL, score_exterieur INT DEFAULT NULL, INDEX IDX_139917347E41B030 (team_domicile_id), INDEX IDX_13991734AF7398B2 (team_exterieur_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE `player` (id INT AUTO_INCREMENT NOT NULL, team_id INT DEFAULT NULL, lastname VARCHAR(255) NOT NULL, firstname VARCHAR(255) NOT NULL, position VARCHAR(255) NOT NULL, is_coach TINYINT(1) NOT NULL, INDEX IDX_98197A65296CD8AE (team_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE stats (id INT AUTO_INCREMENT NOT NULL, player_id INT NOT NULL, battle_id INT NOT NULL, goal INT NOT NULL, assists INT NOT NULL, yellow_card INT NOT NULL, red_card INT NOT NULL, INDEX IDX_574767AA99E6F5DF (player_id), INDEX IDX_574767AAC9732719 (battle_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE team (id INT AUTO_INCREMENT NOT NULL, player_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, INDEX IDX_C4E0A61F99E6F5DF (player_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');

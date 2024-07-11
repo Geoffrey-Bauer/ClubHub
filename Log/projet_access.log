@@ -1956,3 +1956,4 @@
 172.19.0.1 - - [11/Jul/2024:07:49:10 +0000] "GET /_wdt/6f0ea5?XDEBUG_IGNORE=1 HTTP/1.1" 200 21198 "http://localhost/match/7/stats" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
 172.19.0.1 - - [11/Jul/2024:07:49:10 +0000] "GET /images/team_logo.png HTTP/1.1" 404 130457 "http://localhost/match/7/stats" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
 172.19.0.1 - - [11/Jul/2024:07:49:21 +0000] "POST /match/7/player/2/edit-stats HTTP/1.1" 200 122 "http://localhost/match/7/stats" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+172.20.0.1 - - [10/Jul/2024:11:38:57 +0000] "GET /images/avatar.png HTTP/1.1" 404 130457 "http://localhost/team/edit/4" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
