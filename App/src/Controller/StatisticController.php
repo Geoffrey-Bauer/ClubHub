@@ -164,7 +164,7 @@ class StatisticController extends AbstractController
       $currentTime->modify('+1 minute');
     }
 
-    usort($events, function($a, $b) {
+    usort($events, function ($a, $b) {
       return $a['time'] <=> $b['time'];
     });
 
@@ -212,7 +212,7 @@ class StatisticController extends AbstractController
       }
     }
 
-    usort($events, function($a, $b) {
+    usort($events, function ($a, $b) {
       return strcmp($a['time'], $b['time']);
     });
 
@@ -239,7 +239,7 @@ class StatisticController extends AbstractController
     }
 
     $existingStats = $this->statsRepository->findBy(['battle' => $battle]);
-    $lastEventTime = !empty($existingStats) ? max(array_map(function($stat) {
+    $lastEventTime = !empty($existingStats) ? max(array_map(function ($stat) {
       return \DateTime::createFromFormat('H:i', $stat->getTime());
     }, $existingStats)) : $startTime;
 
