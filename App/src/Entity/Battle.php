@@ -20,11 +20,11 @@ class Battle
   #[ORM\Column(length: 255)]
   private ?string $lieu = null;
 
-  #[ORM\Column(nullable: true)]
-  private ?int $scoreDomicile = null;
+  #[ORM\Column(nullable: true, )]
+  private ?int $scoreDomicile = 0;
 
   #[ORM\Column(nullable: true)]
-  private ?int $scoreExterieur = null;
+  private ?int $scoreExterieur = 0;
 
   #[ORM\ManyToOne(targetEntity: Team::class, inversedBy: 'homeBattles')]
   #[ORM\JoinColumn(nullable: false)]
@@ -33,6 +33,7 @@ class Battle
   #[ORM\ManyToOne(targetEntity: Team::class, inversedBy: 'awayBattles')]
   #[ORM\JoinColumn(nullable: false)]
   private ?Team $teamExterieur = null;
+
 
   public function getId(): ?int
   {
@@ -109,6 +110,15 @@ class Battle
     $this->teamExterieur = $teamExterieur;
 
     return $this;
+  }
+
+  public function updateScore(Player $player, int $oldGoal, int $newGoal): void
+  {
+    if ($player->getTeam() === $this->getTeamDomicile()) {
+      $this->setScoreDomicile($this->getScoreDomicile() - $oldGoal + $newGoal);
+    } else {
+      $this->setScoreExterieur($this->getScoreExterieur() - $oldGoal + $newGoal);
+    }
   }
 
   public function __toString()

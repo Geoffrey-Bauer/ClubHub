@@ -1,0 +1,168 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du match{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">Détails du match</h1>
+
+        <div class="bg-white shadow-md rounded-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                    <img src="{{ asset('images/team_logo.png') }}" alt="{{ battle.teamDomicile.name }} logo" class="w-10 h-10 mr-2">
+                    <div class="text-xl font-bold">{{ battle.teamDomicile.name }}</div>
+                </div>
+                <div class="text-4xl font-bold">
+                    <span id="scoreDomicile">{{ battle.scoreDomicile ?? '-' }}</span> - <span id="scoreExterieur">{{ battle.scoreExterieur ?? '-' }}</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="text-xl font-bold">{{ battle.teamExterieur.name }}</div>
+                    <img src="{{ asset('images/team_logo.png') }}" alt="{{ battle.teamExterieur.name }} logo" class="w-10 h-10 ml-2">
+                </div>
+            </div>
+
+            <div class="text-gray-600 text-center mb-4">
+                {{ battle.date|date('d/m/Y H:i') }} - {{ battle.lieu }}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {% for team, players in {'Domicile': playersDomicile, 'Extérieur': playersExterieur} %}
+                <div>
+                    <h2 class="text-2xl font-bold mb-4">Équipe {{ team }}</h2>
+                    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-2 text-left">Joueur</th>
+                                <th class="px-4 py-2 text-center">Buts</th>
+                                <th class="px-4 py-2 text-center">Passes</th>
+                                <th class="px-4 py-2 text-center">CJ</th>
+                                <th class="px-4 py-2 text-center">CR</th>
+                                <th class="px-4 py-2"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for player in players %}
+                                {% set stats = team == 'Domicile' ? statsDomicile[player.id] : statsExterieur[player.id] %}
+                                <tr class="border-t">
+                                    <td class="px-4 py-2">{{ player.firstname }} {{ player.lastname }}</td>
+                                    <td class="px-4 py-2 text-center">
+                                        <span id="goal-{{ player.id }}">{{ stats.goal }}</span>
+                                    </td>
+                                    <td class="px-4 py-2 text-center">
+                                        <span id="assists-{{ player.id }}">{{ stats.assists }}</span>
+                                    </td>
+                                    <td class="px-4 py-2 text-center">
+                                        <span id="yellowCard-{{ player.id }}">{{ stats.yellowCard }}</span>
+                                    </td>
+                                    <td class="px-4 py-2 text-center">
+                                        <span id="redCard-{{ player.id }}">{{ stats.redCard }}</span>
+                                    </td>
+                                    <td class="px-4 py-2 text-right">
+                                        <button onclick="openEditForm({{ player.id }}, {{ battle.id }})" class="text-blue-500 hover:underline">Éditer</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-8">
+            <a href="{{ path('planning_match_list') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                Retour à la liste
+            </a>
+        </div>
+    </div>
+
+    <!-- Modal pour l'édition des stats -->
+    <div id="editFormModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg font-medium text-gray-900 mb-4" id="modalTitle">Éditer les statistiques</h3>
+                <form id="editStatsForm" class="space-y-4">
+                    <input type="hidden" id="playerId" name="playerId">
+                    <input type="hidden" id="battleId" name="battleId">
+                    <div>
+                        <label for="goal" class="block text-sm font-medium text-gray-700">Buts</label>
+                        <input type="number" id="goal" name="goal" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    </div>
+                    <div>
+                        <label for="assists" class="block text-sm font-medium text-gray-700">Passes décisives</label>
+                        <input type="number" id="assists" name="assists" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    </div>
+                    <div>
+                        <label for="yellowCard" class="block text-sm font-medium text-gray-700">Cartons jaunes</label>
+                        <input type="number" id="yellowCard" name="yellowCard" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    </div>
+                    <div>
+                        <label for="redCard" class="block text-sm font-medium text-gray-700">Cartons rouges</label>
+                        <input type="number" id="redCard" name="redCard" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeEditForm()" class="px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                            Annuler
+                        </button>
+                        <button id="saveButton" type="button" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEditForm(playerId, battleId) {
+            const modal = document.getElementById('editFormModal');
+            modal.classList.remove('hidden');
+
+            document.getElementById('playerId').value = playerId;
+            document.getElementById('battleId').value = battleId;
+
+            // Pré-remplir le formulaire avec les valeurs actuelles
+            document.getElementById('goal').value = document.getElementById(`goal-${playerId}`).textContent;
+            document.getElementById('assists').value = document.getElementById(`assists-${playerId}`).textContent;
+            document.getElementById('yellowCard').value = document.getElementById(`yellowCard-${playerId}`).textContent;
+            document.getElementById('redCard').value = document.getElementById(`redCard-${playerId}`).textContent;
+        }
+
+        function closeEditForm() {
+            document.getElementById('editFormModal').classList.add('hidden');
+        }
+
+        document.getElementById('saveButton').addEventListener('click', function() {
+            const form = document.getElementById('editStatsForm');
+            const formData = new FormData(form);
+
+            fetch(`/match/${formData.get('battleId')}/player/${formData.get('playerId')}/edit-stats`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Mettre à jour les statistiques affichées
+                        const playerId = formData.get('playerId');
+                        document.getElementById(`goal-${playerId}`).textContent = data.stats.goal;
+                        document.getElementById(`assists-${playerId}`).textContent = data.stats.assists;
+                        document.getElementById(`yellowCard-${playerId}`).textContent = data.stats.yellowCard;
+                        document.getElementById(`redCard-${playerId}`).textContent = data.stats.redCard;
+
+                        // Mettre à jour les scores des équipes
+                        document.getElementById('scoreDomicile').textContent = data.scoreDomicile;
+                        document.getElementById('scoreExterieur').textContent = data.scoreExterieur;
+                    } else {
+                        alert('Une erreur est survenue lors de la mise à jour des statistiques.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Une erreur est survenue lors de la mise à jour des statistiques.');
+                });
+        });
+    </script>
+{% endblock %}

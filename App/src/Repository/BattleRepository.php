@@ -38,6 +38,34 @@ class BattleRepository extends ServiceEntityRepository
       ->getResult();
   }
 
+  public function getPlayerStatsByTeam(Battle $battle, $team): array
+  {
+    if (!$team instanceof Team && !$team instanceof \Proxies\__CG__\App\Entity\Team) {
+      throw new \InvalidArgumentException('Le deuxième argument doit être une instance de App\Entity\Team ou Proxies\__CG__\App\Entity\Team');
+    }
+
+    return $this->createQueryBuilder('b')
+      ->select('ps')
+      ->join('b.playerStats', 'ps')
+      ->where('b = :battle')
+      ->andWhere('ps.team = :team')
+      ->setParameter('battle', $battle)
+      ->setParameter('team', $team)
+      ->getQuery()
+      ->getResult();
+  }
+
+  public function findBattleWithTeams($id): ?Battle
+  {
+    return $this->createQueryBuilder('b')
+      ->join('b.teamDomicile', 'td')
+      ->join('b.teamExterieur', 'te')
+      ->where('b.id = :id')
+      ->setParameter('id', $id)
+      ->getQuery()
+      ->getOneOrNullResult();
+  }
+
   //    /**
   //     * @return Battle[] Returns an array of Battle objects
   //     */
