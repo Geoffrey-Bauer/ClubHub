@@ -39,6 +39,35 @@ class StatisticController extends AbstractController
     $this->playerRepository = $playerRepository;
   }
 
+
+  #[Route('/player/{id}/stats', name: 'show_player_stats')]
+  public function showPlayerStats(Player $player, StatsRepository $statsRepository): Response
+  {
+    // Récupérez toutes les statistiques pour ce joueur
+    $playerStats = $statsRepository->findBy(['player' => $player]);
+
+    // Calculez les statistiques totales
+    $totalStats = [
+      'goals' => 0,
+      'assists' => 0,
+      'yellowCards' => 0,
+      'redCards' => 0,
+      'matches' => count($playerStats),
+    ];
+
+    foreach ($playerStats as $stat) {
+      $totalStats['goals'] += $stat->getGoal();
+      $totalStats['assists'] += $stat->getAssists();
+      $totalStats['yellowCards'] += $stat->getYellowCard();
+      $totalStats['redCards'] += $stat->getRedCard();
+    }
+
+    return $this->render('stats/player/show.html.twig', [
+      'player' => $player,
+      'playerStats' => $playerStats,
+      'totalStats' => $totalStats,
+    ]);
+  }
   #[Route('/match/{id}/stats', name: 'show_match_stats')]
   public function showMatchStats(Battle $battle): Response
   {
@@ -135,7 +164,7 @@ class StatisticController extends AbstractController
       $currentTime->modify('+1 minute');
     }
 
-    usort($events, function($a, $b) {
+    usort($events, function ($a, $b) {
       return $a['time'] <=> $b['time'];
     });
 
@@ -183,7 +212,7 @@ class StatisticController extends AbstractController
       }
     }
 
-    usort($events, function($a, $b) {
+    usort($events, function ($a, $b) {
       return strcmp($a['time'], $b['time']);
     });
 
@@ -210,7 +239,7 @@ class StatisticController extends AbstractController
     }
 
     $existingStats = $this->statsRepository->findBy(['battle' => $battle]);
-    $lastEventTime = !empty($existingStats) ? max(array_map(function($stat) {
+    $lastEventTime = !empty($existingStats) ? max(array_map(function ($stat) {
       return \DateTime::createFromFormat('H:i', $stat->getTime());
     }, $existingStats)) : $startTime;
 

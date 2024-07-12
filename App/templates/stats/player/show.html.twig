@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques de {{ player.lastname }} {{ player.firstname }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">Statistiques de {{ player.firstname }} {{ player.lastname }}</h1>
+
+    <div class="bg-white shadow-md rounded-lg overflow-hidden mb-8">
+        <h2 class="bg-blue-600 text-white text-lg font-semibold p-4">Statistiques totales</h2>
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b border-gray-200 text-left text-sm font-semibold text-white-700">Matchs joués</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-left text-sm font-semibold text-white-700">Buts</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-left text-sm font-semibold text-white-700">Passes décisives</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-left text-sm font-semibold text-white-700">Cartons jaunes</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-left text-sm font-semibold text-white-700">Cartons rouges</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="py-2 px-4 border-b border-gray-200">{{ totalStats.matches }}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">{{ totalStats.goals }}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">{{ totalStats.assists }}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">{{ totalStats.yellowCards }}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">{{ totalStats.redCards }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <h2 class="bg-blue-600 text-white text-lg font-semibold p-4">Statistiques par match</h2>
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b border-gray-200 text-left text-sm font-semibold text-white-700">Match</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-left text-sm font-semibold text-white-700">Buts</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-left text-sm font-semibold text-white-700">Passes décisives</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-left text-sm font-semibold text-white-700">Cartons jaunes</th>
+                    <th class="py-2 px-4 border-b border-gray-200 text-left text-sm font-semibold text-white-700">Cartons rouges</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in playerStats %}
+                    <tr class="hover:bg-gray-100">
+                        <td class="py-2 px-4 border-b border-gray-200">{{ stat.battle.teamDomicile.name }} vs {{ stat.battle.teamExterieur.name }}</td>
+                        <td class="py-2 px-4 border-b border-gray-200">{{ stat.goal }}</td>
+                        <td class="py-2 px-4 border-b border-gray-200">{{ stat.assists }}</td>
+                        <td class="py-2 px-4 border-b border-gray-200">{{ stat.yellowCard }}</td>
+                        <td class="py-2 px-4 border-b border-gray-200">{{ stat.redCard }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

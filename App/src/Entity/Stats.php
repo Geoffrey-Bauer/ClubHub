@@ -14,16 +14,16 @@ class Stats
   private ?int $id = null;
 
   #[ORM\Column(nullable: true)]
-  private ?int $goal = null;
+  private ?int $goal = 0;
 
   #[ORM\Column(nullable: true)]
-  private ?int $assists = null;
+  private ?int $assists = 0;
 
   #[ORM\Column(nullable: true)]
-  private ?int $yellow_card = null;
+  private ?int $yellow_card = 0;
 
   #[ORM\Column(nullable: true)]
-  private ?int $red_card = null;
+  private ?int $red_card = 0;
 
   #[ORM\ManyToOne]
   #[ORM\JoinColumn(nullable: false)]
