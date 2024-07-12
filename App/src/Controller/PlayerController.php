@@ -15,64 +15,56 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PlayerController extends AbstractController
 {
-    #[Route('/player/new', name: 'player_new')]
-    public function new(Request $request, EntityManagerInterface $em): Response
-    {
-        $player = new Player();
-        $form = $this->createForm(PlayerType::class, $player);
+  #[Route('/player/new', name: 'player_new')]
+  public function new(Request $request, EntityManagerInterface $em): Response
+  {
+    $player = new Player();
+    $form = $this->createForm(PlayerType::class, $player);
 
-        $form->handleRequest($request);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $teamData = $form->get('team')->getData();
-            if ($teamData instanceof Team) {
-                $player->setTeam($teamData);
-            } else {
-                // Si aucune équipe n'est sélectionnée, on laisse la team à null
-                $player->setTeam(null);
-            }
+    if ($form->isSubmitted() && $form->isValid()) {
+      $teamData = $form->get('team')->getData();
+      if ($teamData instanceof Team) {
+        $player->setTeam($teamData);
+      } else {
+        // Si aucune équipe n'est sélectionnée, on laisse la team à null
+        $player->setTeam(null);
+      }
 
-            if ($form->isSubmitted() && $form->isValid()) {
-                $player = $form->getData();
+      if ($form->isSubmitted() && $form->isValid()) {
+        $player = $form->getData();
 
-                if ($player->getIsCoach() === true && $player->getPosition() === null) {
-                    $player->setPosition('Entraineur');
-                } elseif ($player->getIsCoach() === false && $player->getPosition() === null) {
-                    $player->setPosition('Aucun poste');
-                }
-
-                $em->persist($player);
-                $em->flush();
-
-                if ($player->getIsCoach()) {
-                    $this->addFlash('success', 'L\'entraîneur a été créé avec succès.');
-                } else {
-                    $this->addFlash('success', 'Le joueur a été créé avec succès.');
-                }
-
-                return $this->redirectToRoute('player_list');
-            }
-
-
-
-
-            $em->persist($player);
-            $em->flush();
-
-            $this->addFlash('success', 'Le joueur a été créé avec succès.');
-            return $this->redirectToRoute('player_list');
+        if ($player->getIsCoach() === true && $player->getPosition() === null) {
+          $player->setPosition('Entraineur');
+        } elseif ($player->getIsCoach() === false && $player->getPosition() === null) {
+          $player->setPosition('Aucun poste');
         }
 
-        // Vérifier s'il existe des équipes
-        $teams = $em->getRepository(Team::class)->findAll();
-        if (empty($teams)) {
-            $this->addFlash('warning', 'Aucune équipe n\'existe. Le joueur sera créé sans équipe.');
+        $em->persist($player);
+        $em->flush();
+
+        if ($player->getIsCoach()) {
+          $this->addFlash('success', 'L\'entraîneur a été créé avec succès.');
+        } else {
+          $this->addFlash('success', 'Le joueur a été créé avec succès.');
         }
 
-        return $this->render('gestion/player/new.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        return $this->redirectToRoute('player_list');
+      }
     }
+
+    // Vérifier s'il existe des équipes
+    $teams = $em->getRepository(Team::class)->findAll();
+    if (empty($teams)) {
+      $this->addFlash('warning', 'Aucune équipe n\'existe. Le joueur sera créé sans équipe.');
+    }
+
+    return $this->render('gestion/player/new.html.twig', [
+      'form' => $form->createView(),
+    ]);
+  }
+
     #[Route('/player/list', name: 'player_list')]
     public function list(PlayerRepository $playerRepository): Response
     {
