@@ -24,7 +24,7 @@ class Team
   #[ORM\ManyToOne]
   private ?Player $player = null;
 
-  #[ORM\OneToMany(mappedBy: 'team', targetEntity: Player::class)]
+  #[ORM\OneToMany(mappedBy: 'team', targetEntity: Player::class, cascade: ['persist', 'remove'])]
   private Collection $players;
 
   #[Vich\UploadableField(mapping: 'team_images', fileNameProperty: 'imagePath')]
