@@ -16,7 +16,7 @@
                 <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
                     <div class="mt-8 bg-white shadow-xl rounded-lg overflow-hidden">
                         <div class="px-4 py-5 sm:p-6">
-                            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                            {{ form_start(form, {'attr': {'class': 'space-y-6', 'enctype': 'multipart/form-data'}}) }}
                             {% for field in form %}
                                 {% if field.vars.name != '_token' %}
                                     <div>
@@ -26,6 +26,11 @@
                                                 {{ form_widget(field, {'attr': {
                                                     'class': 'block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-sm',
                                                     'placeholder': 'Entrez le nom de l\'équipe'
+                                                }}) }}
+                                            {% elseif field.vars.name == 'imageFile' %}
+                                                {{ form_widget(field, {'attr': {
+                                                    'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                                                    'accept': 'image/*'
                                                 }}) }}
                                             {% else %}
                                                 {{ form_widget(field, {'attr': {'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'}}) }}

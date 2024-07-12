@@ -26,9 +26,17 @@ class TeamController extends AbstractController
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+      // Gérer l'upload de l'image
+      $imageFile = $form->get('imageFile')->getData();
+      if ($imageFile) {
+        $team->setImageFile($imageFile);
+        $team->setUpdatedAt(new \DateTimeImmutable());
+      }
+
       $em->persist($team);
       $em->flush();
 
+      $this->addFlash('success', 'L\'équipe a été créée avec succès.');
       return $this->redirectToRoute('team_list');
     }
 
@@ -36,7 +44,6 @@ class TeamController extends AbstractController
       'form' => $form->createView(),
     ]);
   }
-
 
   #[Route('/team/list/', name: 'team_list')]
 
