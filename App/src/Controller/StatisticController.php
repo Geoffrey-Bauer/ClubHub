@@ -55,7 +55,26 @@ class StatisticController extends AbstractController
       'matches' => count($playerStats),
     ];
 
+    // Regroupez les statistiques par match
+    $matchStats = [];
     foreach ($playerStats as $stat) {
+      $matchId = $stat->getBattle()->getId();
+      if (!isset($matchStats[$matchId])) {
+        $matchStats[$matchId] = [
+          'teamDomicile' => $stat->getBattle()->getTeamDomicile()->getName(),
+          'teamExterieur' => $stat->getBattle()->getTeamExterieur()->getName(),
+          'goal' => 0,
+          'assists' => 0,
+          'yellowCard' => 0,
+          'redCard' => 0,
+        ];
+      }
+      $matchStats[$matchId]['goal'] += $stat->getGoal();
+      $matchStats[$matchId]['assists'] += $stat->getAssists();
+      $matchStats[$matchId]['yellowCard'] += $stat->getYellowCard();
+      $matchStats[$matchId]['redCard'] += $stat->getRedCard();
+
+      // Mettez à jour les statistiques totales
       $totalStats['goals'] += $stat->getGoal();
       $totalStats['assists'] += $stat->getAssists();
       $totalStats['yellowCards'] += $stat->getYellowCard();
@@ -64,7 +83,7 @@ class StatisticController extends AbstractController
 
     return $this->render('stats/player/show.html.twig', [
       'player' => $player,
-      'playerStats' => $playerStats,
+      'matchStats' => $matchStats,
       'totalStats' => $totalStats,
     ]);
   }
