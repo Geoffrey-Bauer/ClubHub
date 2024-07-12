@@ -27,6 +27,7 @@ class Player
   private ?string $position = null;
 
   #[ORM\ManyToOne(targetEntity: Team::class, inversedBy: 'players')]
+  #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
   private ?Team $team = null;
 
   #[ORM\Column(nullable: true)]
