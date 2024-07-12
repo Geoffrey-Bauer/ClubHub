@@ -40,6 +40,9 @@ class StatisticController extends AbstractController
   }
 
 
+
+
+
   #[Route('/player/{id}/stats', name: 'show_player_stats')]
   public function showPlayerStats(Player $player, StatsRepository $statsRepository): Response
   {
@@ -111,19 +114,30 @@ class StatisticController extends AbstractController
 
     $events = $this->generateRandomEvents($playersDomicile, $playersExterieur, $startTime, $endTime);
 
+    $yellowCards = []; // Pour suivre les cartons jaunes de chaque joueur
+
     foreach ($events as $event) {
       $stat = new Stats();
-      $stat->setPlayer($event['player']);
+      $player = $this->entityManager->getRepository(Player::class)->find($event['player']);
+      $stat->setPlayer($player);
       $stat->setBattle($battle);
       $stat->setTime($event['time']->format('H:i'));
 
       switch ($event['type']) {
         case self::EVENT_GOAL:
           $stat->setGoal(1);
-          $this->updateScore($battle, $event['player']);
+          $this->updateScore($battle, $player);
           break;
         case self::EVENT_YELLOW_CARD:
           $stat->setYellowCard(1);
+          if (!isset($yellowCards[$player->getId()])) {
+            $yellowCards[$player->getId()] = 0;
+          }
+          $yellowCards[$player->getId()]++;
+          if ($yellowCards[$player->getId()] == 2) {
+            // Deuxième carton jaune, exclure le joueur
+            $stat->setRedCard(1); // On considère ça comme un carton rouge
+          }
           break;
         case self::EVENT_RED_CARD:
           $stat->setRedCard(1);
@@ -140,28 +154,60 @@ class StatisticController extends AbstractController
   {
     $events = [];
     $allPlayers = array_merge($playersDomicile->toArray(), $playersExterieur->toArray());
+    $playersWithRedCard = [];
+    $yellowCards = [];
 
     $currentTime = clone $startTime;
     $halfTimeStart = (clone $startTime)->modify('+45 minutes');
     $halfTimeEnd = (clone $halfTimeStart)->modify('+' . self::HALF_TIME_DURATION . ' minutes');
 
-    while ($currentTime <= $endTime) {
-      if ($currentTime >= $halfTimeStart && $currentTime < $halfTimeEnd) {
-        $currentTime = clone $halfTimeEnd;
-        continue;
+    $matchDuration = $endTime->getTimestamp() - $startTime->getTimestamp();
+    $numberOfEvents = mt_rand(5, 15); // Nombre total d'événements pour le match
+
+    for ($i = 0; $i < $numberOfEvents; $i++) {
+      // Générer un temps aléatoire pour l'événement
+      $eventTime = clone $startTime;
+      $randomSeconds = mt_rand(0, $matchDuration);
+      $eventTime->modify("+$randomSeconds seconds");
+
+      // Vérifier si l'événement tombe pendant la mi-temps
+      if ($eventTime >= $halfTimeStart && $eventTime < $halfTimeEnd) {
+        continue; // Passer à l'itération suivante si l'événement tombe pendant la mi-temps
       }
 
-      if (rand(1, 100) <= 10) { // 10% chance d'un événement
-        $player = $allPlayers[array_rand($allPlayers)];
-        $eventType = $this->getRandomEventType();
+      $eventType = $this->getRandomEventType();
+
+      if ($eventType !== 'NO_EVENT') {
+        $eligiblePlayers = array_filter($allPlayers, function ($player) use ($playersWithRedCard, $yellowCards) {
+          return !in_array($player, $playersWithRedCard, true) &&
+            (!isset($yellowCards[$player->getId()]) || $yellowCards[$player->getId()] < 2);
+        });
+
+        if (empty($eligiblePlayers)) {
+          break; // Arrêter si tous les joueurs ont été exclus
+        }
+
+        $player = $eligiblePlayers[array_rand($eligiblePlayers)];
 
         $events[] = [
           'type' => $eventType,
-          'player' => $player,
-          'time' => clone $currentTime,
+          'player' => $player->getId(),
+          'playerName' => $player->getFirstName() . ' ' . $player->getLastName(),
+          'time' => $eventTime,
         ];
+
+        if ($eventType === self::EVENT_RED_CARD) {
+          $playersWithRedCard[] = $player;
+        } elseif ($eventType === self::EVENT_YELLOW_CARD) {
+          if (!isset($yellowCards[$player->getId()])) {
+            $yellowCards[$player->getId()] = 0;
+          }
+          $yellowCards[$player->getId()]++;
+          if ($yellowCards[$player->getId()] == 2) {
+            $playersWithRedCard[] = $player;
+          }
+        }
       }
-      $currentTime->modify('+1 minute');
     }
 
     usort($events, function ($a, $b) {
@@ -170,11 +216,18 @@ class StatisticController extends AbstractController
 
     return $events;
   }
-
   private function getRandomEventType(): string
   {
-    $eventTypes = [self::EVENT_GOAL, self::EVENT_YELLOW_CARD, self::EVENT_RED_CARD];
-    return $eventTypes[array_rand($eventTypes)];
+    $random = mt_rand(1, 100);
+    if ($random <= 5) {
+      return self::EVENT_GOAL;  // 3% de chance pour un but
+    } elseif ($random <= 10) {
+      return self::EVENT_YELLOW_CARD;  // 5% de chance pour un carton jaune
+    } elseif ($random <= 3) {
+      return self::EVENT_RED_CARD;  // 2% de chance pour un carton rouge
+    } else {
+      return 'NO_EVENT';  // 90% de chance qu'il ne se passe rien
+    }
   }
 
   private function updateScore(Battle $battle, Player $player)
