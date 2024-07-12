@@ -1,19 +1,16 @@
-{# templates/classement/classement.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Classement des équipes - Back Office{% endblock %}
+{% block title %}Classement des équipes - ClubHub{% endblock %}
 
 {% block body %}
     {% include '_templates/_nav.html.twig' %}
 
     <div class="flex h-screen bg-gray-100">
-        {# ... (le reste du code reste inchangé) ... #}
-
-        <!-- Main content -->
         <div class="flex-1 overflow-auto focus:outline-none">
             <main class="flex-1 relative z-0 overflow-y-auto py-6 focus:outline-none">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                     <h1 class="text-2xl font-semibold text-gray-900 mb-6">Classement des équipes</h1>
+                    <p class="text-sm text-gray-600 mb-4">Mis à jour le : {{ currentDate|date('d/m/Y H:i') }}</p>
                     <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">

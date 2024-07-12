@@ -16,7 +16,7 @@ class ClassementController extends AbstractController
   {
     $teams = $entityManager->getRepository(Team::class)->findAll();
     $classement = [];
-    $now = new \DateTime();
+    $now = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
 
     foreach ($teams as $team) {
       $stats = $this->calculateTeamStats($entityManager, $team, $now);
@@ -64,30 +64,19 @@ class ClassementController extends AbstractController
 
     foreach ($allMatches as $match) {
       $matchDate = $match->getDate();
+      $matchEndTime = (clone $matchDate)->modify('+90 minutes');
       $isHomeTeam = $match->getTeamDomicile() === $team;
 
-      // Match terminé ou en cours
-      if ($matchDate <= $now) {
-        $teamScore = $isHomeTeam ? $match->getScoreDomicile() : $match->getScoreExterieur();
-        $opponentScore = $isHomeTeam ? $match->getScoreExterieur() : $match->getScoreDomicile();
-
-        $butsPour += $teamScore;
-        $butsContre += $opponentScore;
-
-        // Si le match est terminé (date antérieure à aujourd'hui), on compte les points
-        if ($matchDate->format('Y-m-d') < $now->format('Y-m-d')) {
-          $matchsJoues++;
-          if ($teamScore > $opponentScore) {
-            $points += 3;
-            $victoires++;
-          } elseif ($teamScore < $opponentScore) {
-            $defaites++;
-          } else {
-            $points += 1;
-            $egalites++;
-          }
-        }
+      // Match terminé
+      if ($now > $matchEndTime) {
+        $this->processFinishedMatch($match, $isHomeTeam, $points, $victoires, $egalites, $defaites, $butsPour, $butsContre, $matchsJoues);
       }
+      // Match en cours
+      elseif ($now >= $matchDate && $now <= $matchEndTime) {
+        $this->processOngoingMatch($match, $isHomeTeam, $points, $victoires, $egalites, $defaites, $butsPour, $butsContre, $matchsJoues);
+      }
+      // Match pas encore commencé
+      // Ne rien faire
     }
 
     return [
@@ -100,5 +89,41 @@ class ClassementController extends AbstractController
       'butsContre' => $butsContre,
       'matchsJoues' => $matchsJoues,
     ];
+  }
+
+  private function processFinishedMatch(Battle $match, bool $isHomeTeam, int &$points, int &$victoires, int &$egalites, int &$defaites, int &$butsPour, int &$butsContre, int &$matchsJoues): void
+  {
+    $teamScore = $isHomeTeam ? $match->getScoreDomicile() : $match->getScoreExterieur();
+    $opponentScore = $isHomeTeam ? $match->getScoreExterieur() : $match->getScoreDomicile();
+
+    $butsPour += $teamScore;
+    $butsContre += $opponentScore;
+    $matchsJoues++;
+
+    if ($teamScore > $opponentScore) {
+      $points += 3;
+      $victoires++;
+    } elseif ($teamScore < $opponentScore) {
+      $defaites++;
+    } else {
+      $points += 1;
+      $egalites++;
+    }
+  }
+
+  private function processOngoingMatch(Battle $match, bool $isHomeTeam, int &$points, int &$victoires, int &$egalites, int &$defaites, int &$butsPour, int &$butsContre, int &$matchsJoues): void
+  {
+    $teamScore = $isHomeTeam ? $match->getScoreDomicile() : $match->getScoreExterieur();
+    $opponentScore = $isHomeTeam ? $match->getScoreExterieur() : $match->getScoreDomicile();
+
+    $butsPour += $teamScore;
+    $butsContre += $opponentScore;
+    $matchsJoues++;
+
+    if ($teamScore > $opponentScore) {
+      $points += 3;
+    } elseif ($teamScore === $opponentScore) {
+      $points += 1;
+    }
   }
 }
