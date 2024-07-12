@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class TeamType extends AbstractType
 {
@@ -18,6 +19,11 @@ class TeamType extends AbstractType
     {
         $builder
             ->add('name')
+            ->add('imageFile', VichImageType::class, [
+                'required' => false,
+                'allow_delete' => true,
+                'download_uri' => false,
+            ])
 
             // Ajoutez d'autres champs ici...
         ;
