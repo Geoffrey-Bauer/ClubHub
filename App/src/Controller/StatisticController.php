@@ -161,10 +161,18 @@ class StatisticController extends AbstractController
     $halfTimeStart = (clone $startTime)->modify('+45 minutes');
     $halfTimeEnd = (clone $halfTimeStart)->modify('+' . self::HALF_TIME_DURATION . ' minutes');
 
-    while ($currentTime <= $endTime) {
-      if ($currentTime >= $halfTimeStart && $currentTime < $halfTimeEnd) {
-        $currentTime = clone $halfTimeEnd;
-        continue;
+    $matchDuration = $endTime->getTimestamp() - $startTime->getTimestamp();
+    $numberOfEvents = mt_rand(5, 15); // Nombre total d'événements pour le match
+
+    for ($i = 0; $i < $numberOfEvents; $i++) {
+      // Générer un temps aléatoire pour l'événement
+      $eventTime = clone $startTime;
+      $randomSeconds = mt_rand(0, $matchDuration);
+      $eventTime->modify("+$randomSeconds seconds");
+
+      // Vérifier si l'événement tombe pendant la mi-temps
+      if ($eventTime >= $halfTimeStart && $eventTime < $halfTimeEnd) {
+        continue; // Passer à l'itération suivante si l'événement tombe pendant la mi-temps
       }
 
       $eventType = $this->getRandomEventType();
@@ -185,7 +193,7 @@ class StatisticController extends AbstractController
           'type' => $eventType,
           'player' => $player->getId(),
           'playerName' => $player->getFirstName() . ' ' . $player->getLastName(),
-          'time' => clone $currentTime,
+          'time' => $eventTime,
         ];
 
         if ($eventType === self::EVENT_RED_CARD) {
@@ -200,8 +208,6 @@ class StatisticController extends AbstractController
           }
         }
       }
-
-      $currentTime->modify('+1 minute');
     }
 
     usort($events, function ($a, $b) {
@@ -213,11 +219,11 @@ class StatisticController extends AbstractController
   private function getRandomEventType(): string
   {
     $random = mt_rand(1, 100);
-    if ($random <= 3) {
+    if ($random <= 5) {
       return self::EVENT_GOAL;  // 3% de chance pour un but
-    } elseif ($random <= 8) {
-      return self::EVENT_YELLOW_CARD;  // 5% de chance pour un carton jaune
     } elseif ($random <= 10) {
+      return self::EVENT_YELLOW_CARD;  // 5% de chance pour un carton jaune
+    } elseif ($random <= 3) {
       return self::EVENT_RED_CARD;  // 2% de chance pour un carton rouge
     } else {
       return 'NO_EVENT';  // 90% de chance qu'il ne se passe rien
