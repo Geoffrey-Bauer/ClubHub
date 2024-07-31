@@ -89,84 +89,114 @@ class PlanningController extends AbstractController
 
   // TRAINING SECTION END
 
-  // MATCH SECTION START
+// MATCH SECTION START
 
+// Déclare une route pour la création d'un nouveau match
   #[Route('/planning/match/new', name: 'planning_match_new')]
   public function newMatch(Request $request, EntityManagerInterface $em): Response
   {
+    // Crée une nouvelle instance de Battle (match)
     $battle = new Battle();
+    // Crée un formulaire pour le match en utilisant BattleType
     $form = $this->createForm(BattleType::class, $battle);
+    // Gère la requête du formulaire
     $form->handleRequest($request);
 
+    // Vérifie si le formulaire est soumis et valide
     if ($form->isSubmitted() && $form->isValid()) {
+      // Persiste le nouveau match dans la base de données
       $em->persist($battle);
+      // Applique les changements dans la base de données
       $em->flush();
+      // Redirige vers la liste des matchs
       return $this->redirectToRoute('planning_match_list');
     }
 
+    // Rend la vue pour créer un nouveau match
     return $this->render('planning/match/new.html.twig', [
+      // Passe le formulaire à la vue
       'form' => $form->createView(),
     ]);
   }
 
+// Déclare une route pour lister les matchs
   #[Route('/planning/match/list', name: 'planning_match_list')]
   public function listMatches(Request $request, BattleRepository $battleRepository, TeamRepository $teamRepository): Response
   {
+    // Récupère le filtre d'équipe depuis les paramètres de la requête
     $teamFilter = $request->query->get('teamFilter') ? (int) $request->query->get('teamFilter') : null;
 
+    // Rend la vue pour lister les matchs
     return $this->render('planning/match/list.html.twig', [
+      // Passe les matchs filtrés par équipe à la vue
       'battles' => $battleRepository->findByTeam($teamFilter),
+      // Passe toutes les équipes à la vue
       'teams' => $teamRepository->findAll(),
     ]);
   }
 
+// Déclare une route pour éditer un match
   #[Route('/planning/match/{id}/edit', name: 'battle_edit')]
   public function editMatch(Request $request, Battle $battle, EntityManagerInterface $em): Response
   {
+    // Crée un formulaire pour éditer le match en utilisant BattleType
     $form = $this->createForm(BattleType::class, $battle);
+    // Gère la requête du formulaire
     $form->handleRequest($request);
 
+    // Vérifie si le formulaire est soumis et valide
     if ($form->isSubmitted() && $form->isValid()) {
+      // Applique les changements dans la base de données
       $em->flush();
+      // Ajoute un message flash de succès
       $this->addFlash('success', 'Le match a été mis à jour avec succès.');
+      // Redirige vers la liste des matchs
       return $this->redirectToRoute('planning_match_list');
     }
 
+    // Rend la vue pour éditer le match
     return $this->render('planning/match/edit.html.twig', [
+      // Passe le match et le formulaire à la vue
       'battle' => $battle,
       'form' => $form->createView(),
     ]);
   }
 
+// Déclare une route pour supprimer un match
   #[Route('/planning/match/{id}/delete', name: 'battle_delete')]
   public function deleteMatch(Request $request, Battle $battle, EntityManagerInterface $em, StatsRepository $statsRepository): Response
   {
+    // Vérifie si le token CSRF est valide
     if ($this->isCsrfTokenValid('delete'.$battle->getId(), $request->request->get('_token'))) {
       try {
-        // Récupérer toutes les statistiques liées à ce match
+        // Récupère toutes les statistiques liées à ce match
         $stats = $statsRepository->findBy(['battle' => $battle]);
 
-        // Supprimer chaque statistique
+        // Supprime chaque statistique
         foreach ($stats as $stat) {
           $em->remove($stat);
         }
 
-        // Supprimer le match
+        // Supprime le match
         $em->remove($battle);
 
-        // Appliquer les changements dans la base de données
+        // Applique les changements dans la base de données
         $em->flush();
 
+        // Ajoute un message flash de succès
         $this->addFlash('success', 'Le match et toutes ses statistiques ont été supprimés avec succès.');
       } catch (\Exception $e) {
+        // Ajoute un message flash d'erreur en cas d'exception
         $this->addFlash('error', 'Une erreur est survenue lors de la suppression du match : ' . $e->getMessage());
       }
     } else {
+      // Ajoute un message flash d'erreur si le token CSRF est invalide
       $this->addFlash('error', 'Token CSRF invalide.');
     }
 
+    // Redirige vers la liste des matchs
     return $this->redirectToRoute('planning_match_list');
   }
 
-  // MATCH SECTION END
+// MATCH SECTION END
 }
