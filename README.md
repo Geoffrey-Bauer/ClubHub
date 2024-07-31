@@ -1,10 +1,10 @@
 # Gestion des Clubs de Sport
 
-![PHP](https://img.shields.io/badge/PHP-7.4-blue)
-![Symfony](https://img.shields.io/badge/Symfony-5.3-black)
-![Docker](https://img.shields.io/badge/Docker-20.10.8-blue)
-![Node.js](https://img.shields.io/badge/Node.js-14.17.3-green)
-![Git](https://img.shields.io/badge/Git-2.31.1-orange)
+![PHP](https://img.shields.io/badge/PHP-8.3-blue?style=for-the-badge&logo=php)
+![Symfony](https://img.shields.io/badge/Symfony-7.0-darkblue?style=for-the-badge&logo=symfony)
+![Docker](https://img.shields.io/badge/Docker-20.10.8-blue?style=for-the-badge&logo=docker)
+![Node.js](https://img.shields.io/badge/Node.js-18.17.1-brightgreen?style=for-the-badge&logo=node.js)
+![Git](https://img.shields.io/badge/Git-2.42.0-orange?style=for-the-badge&logo=git)
 
 ## Description
 
