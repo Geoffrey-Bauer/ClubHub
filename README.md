@@ -17,9 +17,8 @@ Bienvenue dans le projet **Gestion des Clubs de Sport**. Ce backoffice vous perm
 - 🔍 **Détails des équipes et des joueurs**
 
 Développé dans le cadre de notre formation, ce projet utilise :
-- **Symfony** pour le backend
+- **Symfony** pour le backend et frontend
 - **Docker** pour la conteneurisation
-- **Node.js** pour le développement frontend
 
 ## Prérequis
 
@@ -58,7 +57,6 @@ Suivez ces étapes pour installer et démarrer le projet en local :
 8. **Charger les fixtures dans la base de données**
    ```bash
    docker exec -it phpclub php bin/console d:f:l
-
 
  ## Auteurs
  Ce projet a été réalisé par :
